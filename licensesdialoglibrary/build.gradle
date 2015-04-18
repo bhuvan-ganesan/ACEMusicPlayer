@@ -5,7 +5,6 @@ android {
     buildToolsVersion "20.0.0"
 
     defaultConfig {
-        applicationId "de.psdev.licensesdialog"
         minSdkVersion 14
         targetSdkVersion 19
     }
