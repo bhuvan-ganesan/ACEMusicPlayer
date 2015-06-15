@@ -16,17 +16,10 @@
 package com.aniruddhc.acemusic.player.SettingsActivity;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.content.Context;
-import android.media.audiofx.BassBoost;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.content.Intent;
-import android.view.ViewGroup;
+import android.os.Bundle;
 
 import com.aniruddhc.acemusic.player.EqualizerActivity.EqualizerActivity;
-import com.aniruddhc.acemusic.player.Utils.Common;
 import com.aniruddhc.acemusic.player.R;
 
 /**

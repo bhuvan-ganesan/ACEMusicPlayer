@@ -15,8 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.BlacklistManagerActivity;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
@@ -25,8 +23,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
+import com.aniruddhc.acemusic.player.R;
+
+import java.util.ArrayList;
 
 //Adapter subclass for the Blacklists ListView.
 public class BlacklistedElementsAdapter extends ArrayAdapter<String> {

@@ -16,24 +16,24 @@
 package com.aniruddhc.acemusic.player.Dialogs;
 
 import android.app.AlertDialog;
-import android.database.Cursor;
-import android.database.MatrixCursor;
-import android.database.MergeCursor;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
+import android.database.Cursor;
+import android.database.MatrixCursor;
+import android.database.MergeCursor;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.EditText;
 
-import com.aniruddhc.acemusic.player.R;
-import com.aniruddhc.acemusic.player.AsyncTasks.AsyncCreateNewPlaylistTask;
 import com.aniruddhc.acemusic.player.AsyncTasks.AsyncAddSongsToPlaylistTask;
-import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
+import com.aniruddhc.acemusic.player.AsyncTasks.AsyncCreateNewPlaylistTask;
 import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
+import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
+import com.aniruddhc.acemusic.player.R;
 
 public class AddToPlaylistDialog extends DialogFragment {
 

@@ -27,11 +27,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.InAppBilling.IabHelper;
 import com.aniruddhc.acemusic.player.InAppBilling.IabResult;
 import com.aniruddhc.acemusic.player.InAppBilling.Purchase;
 import com.aniruddhc.acemusic.player.MainActivity.MainActivity;
+import com.aniruddhc.acemusic.player.R;
 
 public class TrialFragment extends Fragment {
 	

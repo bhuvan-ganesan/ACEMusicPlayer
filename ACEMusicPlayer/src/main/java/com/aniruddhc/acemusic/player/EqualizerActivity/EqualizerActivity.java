@@ -15,8 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.EqualizerActivity;
 
-import java.util.ArrayList;
-
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -51,7 +49,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.AsyncTasks.AsyncApplyEQToAllSongsTask;
 import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
 import com.aniruddhc.acemusic.player.Dialogs.EQAlbumsListDialog;
@@ -59,8 +56,11 @@ import com.aniruddhc.acemusic.player.Dialogs.EQArtistsListDialog;
 import com.aniruddhc.acemusic.player.Dialogs.EQGenresListDialog;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
 import com.aniruddhc.acemusic.player.Helpers.UIElementsHelper;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Utils.Common;
 import com.aniruddhc.acemusic.player.Views.VerticalSeekBar;
+
+import java.util.ArrayList;
 
 public class EqualizerActivity extends FragmentActivity {
 

@@ -31,10 +31,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.aniruddhc.acemusic.player.AsyncTasks.AsyncBuildLibraryTask;
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.AsyncTasks.AsyncBuildLibraryTask.OnBuildLibraryProgressUpdate;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
 import com.aniruddhc.acemusic.player.MainActivity.MainActivity;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Utils.Common;
 
 public class BuildingLibraryProgressFragment extends Fragment implements OnBuildLibraryProgressUpdate {

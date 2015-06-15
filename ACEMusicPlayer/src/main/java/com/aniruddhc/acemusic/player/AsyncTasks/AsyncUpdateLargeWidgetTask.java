@@ -15,8 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.AsyncTasks;
 
-import java.io.File;
-
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -29,11 +27,13 @@ import android.os.AsyncTask;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.LauncherActivity.LauncherActivity;
 import com.aniruddhc.acemusic.player.NowPlayingActivity.NowPlayingActivity;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Services.LargeWidgetAdapterService;
 import com.aniruddhc.acemusic.player.Utils.Common;
+
+import java.io.File;
 
 public class AsyncUpdateLargeWidgetTask extends AsyncTask<String, Integer, Boolean> {
 	

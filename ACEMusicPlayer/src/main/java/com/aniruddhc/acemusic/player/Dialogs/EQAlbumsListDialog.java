@@ -22,10 +22,10 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.AsyncTasks.AsyncApplyEQToAlbumTask;
 import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
 import com.aniruddhc.acemusic.player.EqualizerActivity.EqualizerActivity;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Utils.Common;
 
 public class EQAlbumsListDialog extends DialogFragment {

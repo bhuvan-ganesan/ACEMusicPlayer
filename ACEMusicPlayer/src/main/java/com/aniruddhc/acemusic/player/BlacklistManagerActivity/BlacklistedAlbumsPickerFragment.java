@@ -30,10 +30,10 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.BlacklistManagerActivity.BlacklistedAlbumsMultiselectAdapter.AsyncBlacklistAlbumTask;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
 import com.aniruddhc.acemusic.player.Helpers.UIElementsHelper;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Utils.Common;
 
 public class BlacklistedAlbumsPickerFragment extends Fragment {

@@ -15,14 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.AsyncTasks;
 
-import java.io.File;
-import java.util.ArrayList;
-
-import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.Tag;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
@@ -30,6 +22,14 @@ import android.os.AsyncTask;
 
 import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
 import com.aniruddhc.acemusic.player.Utils.Common;
+
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
+
+import java.io.File;
+import java.util.ArrayList;
 
 /*************************************************************
  * Builds an initial MatrixCursor with 5 entries/songs. This 

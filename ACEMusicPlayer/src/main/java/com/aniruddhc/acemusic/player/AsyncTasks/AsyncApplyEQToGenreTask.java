@@ -20,8 +20,8 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Utils.Common;
 
 public class AsyncApplyEQToGenreTask extends AsyncTask<String, Void, Void> {

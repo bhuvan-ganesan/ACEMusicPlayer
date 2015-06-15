@@ -18,10 +18,11 @@ package com.aniruddhc.acemusic.player.ImageTransformers;
 import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
-//import android.support.v7.graphics.Palette;
 import android.view.View;
 
 import com.squareup.picasso.Transformation;
+
+//import android.support.v7.graphics.Palette;
 
 public class PicassoPaletteTransformer implements Transformation {
 

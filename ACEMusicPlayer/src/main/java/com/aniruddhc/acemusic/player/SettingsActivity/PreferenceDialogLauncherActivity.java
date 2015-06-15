@@ -16,14 +16,12 @@
 package com.aniruddhc.acemusic.player.SettingsActivity;
 
 
-import main.java.de.psdev.licensesdialog.LicensesDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Dialogs.AddMusicLibraryDialog;
 import com.aniruddhc.acemusic.player.Dialogs.AlbumArtSourceDialog;
 import com.aniruddhc.acemusic.player.Dialogs.ApplicationThemeDialog;
@@ -31,10 +29,12 @@ import com.aniruddhc.acemusic.player.Dialogs.BlacklistedElementsDialog;
 import com.aniruddhc.acemusic.player.Dialogs.CoverArtStyleDialog;
 import com.aniruddhc.acemusic.player.Dialogs.CustomizeScreensDialog;
 import com.aniruddhc.acemusic.player.Dialogs.EditDeleteMusicLibraryDialog;
-import com.aniruddhc.acemusic.player.Dialogs.GooglePlayMusicAuthenticationDialog;
 import com.aniruddhc.acemusic.player.Dialogs.NowPlayingColorSchemesDialog;
 import com.aniruddhc.acemusic.player.Dialogs.ScanFrequencyDialog;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Utils.Common;
+
+import main.java.de.psdev.licensesdialog.LicensesDialog;
 
 /*************************************************************************
  * This class displays a dummy activity which fires up a FragmentDialog 
@@ -144,14 +144,6 @@ public class PreferenceDialogLauncherActivity extends FragmentActivity {
 			Bundle bundle = getIntent().getExtras();
 			deleteMusicLibraryDialog.setArguments(bundle);
 			deleteMusicLibraryDialog.show(ft, "editDeleteMusicLibraryDialog");
-			
-		} else if (index==15) {
-			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-			GooglePlayMusicAuthenticationDialog dialog = new GooglePlayMusicAuthenticationDialog();
-			Bundle bundle = new Bundle();
-			bundle.putBoolean(Common.FIRST_RUN, false);
-			dialog.setArguments(bundle);
-			dialog.show(ft, "gMusicAuthDialog");
 			
 		}
 

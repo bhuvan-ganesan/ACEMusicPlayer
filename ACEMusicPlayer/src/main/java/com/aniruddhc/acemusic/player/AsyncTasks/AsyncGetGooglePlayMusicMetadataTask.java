@@ -15,12 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.AsyncTasks;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-
-import org.json.JSONArray;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -32,10 +26,16 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.PowerManager;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Services.AudioPlaybackService;
 import com.aniruddhc.acemusic.player.Utils.Common;
+
+import org.json.JSONArray;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Checks if the Google Play Music app is installed on the user's device. If it

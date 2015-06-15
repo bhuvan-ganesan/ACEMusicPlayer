@@ -15,8 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.BlacklistManagerActivity;
 
-import java.util.HashMap;
-
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
@@ -38,16 +36,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Helpers.UIElementsHelper;
 import com.aniruddhc.acemusic.player.MusicLibraryEditorActivity.AlbumsPickerFragment;
 import com.aniruddhc.acemusic.player.MusicLibraryEditorActivity.ArtistsPickerFragment;
 import com.aniruddhc.acemusic.player.MusicLibraryEditorActivity.SongsPickerFragment;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Utils.Common;
 import com.aniruddhc.acemusic.player.Utils.TypefaceSpan;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+
+import java.util.HashMap;
 
 public class BlacklistManagerActivity extends FragmentActivity {
 

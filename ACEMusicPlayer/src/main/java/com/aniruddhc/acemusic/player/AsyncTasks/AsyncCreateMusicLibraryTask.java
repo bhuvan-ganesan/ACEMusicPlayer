@@ -15,17 +15,17 @@
  */
 package com.aniruddhc.acemusic.player.AsyncTasks;
 
-import java.util.HashSet;
-
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Utils.Common;
+
+import java.util.HashSet;
 
 /**************************************************************************************
  * This AsyncTask creates the specified music library.

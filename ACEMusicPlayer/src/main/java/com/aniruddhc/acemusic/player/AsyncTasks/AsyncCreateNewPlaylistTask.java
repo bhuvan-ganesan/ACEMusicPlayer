@@ -15,8 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.AsyncTasks;
 
-import java.util.ArrayList;
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -27,8 +25,10 @@ import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.widget.Toast;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
+import com.aniruddhc.acemusic.player.R;
+
+import java.util.ArrayList;
 
 public class AsyncCreateNewPlaylistTask extends AsyncTask<String, Integer, Boolean> {
     private Context mContext;

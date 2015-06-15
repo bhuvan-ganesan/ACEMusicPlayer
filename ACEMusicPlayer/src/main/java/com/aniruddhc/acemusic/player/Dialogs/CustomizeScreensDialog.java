@@ -15,8 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.Dialogs;
 
-import java.util.ArrayList;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -37,10 +35,12 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
+import com.aniruddhc.acemusic.player.R;
 import com.mobeta.android.dslv.DragSortListView;
 import com.mobeta.android.dslv.SimpleFloatViewManager;
+
+import java.util.ArrayList;
 
 @SuppressLint("DefaultLocale")
 public class CustomizeScreensDialog extends DialogFragment {

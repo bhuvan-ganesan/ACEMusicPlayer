@@ -20,8 +20,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.EqualizerActivity.EqualizerActivity;
+import com.aniruddhc.acemusic.player.R;
 
 public class AsyncApplyEQToPlaylistTask extends AsyncTask<String, Void, Boolean> {
     private Context mContext;

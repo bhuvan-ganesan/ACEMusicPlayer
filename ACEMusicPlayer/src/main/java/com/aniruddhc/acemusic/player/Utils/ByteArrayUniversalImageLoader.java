@@ -15,15 +15,15 @@
  */
 package com.aniruddhc.acemusic.player.Utils;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import android.content.Context;
 import android.media.MediaMetadataRetriever;
 
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
+
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * This custom loader class allows the UniversalImageLoader to decode 

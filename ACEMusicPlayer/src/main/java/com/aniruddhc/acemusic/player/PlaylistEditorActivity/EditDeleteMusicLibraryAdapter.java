@@ -25,9 +25,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
+import com.aniruddhc.acemusic.player.R;
 
 public class EditDeleteMusicLibraryAdapter extends SimpleCursorAdapter {
 	

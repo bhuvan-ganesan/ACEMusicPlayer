@@ -15,28 +15,20 @@
  */
 package com.aniruddhc.acemusic.player.SettingsActivity;
 
-import android.app.AlertDialog;
-import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
-import android.content.Intent;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.aniruddhc.acemusic.player.Dialogs.ApplicationThemeDialog;
-import com.aniruddhc.acemusic.player.Dialogs.NowPlayingColorSchemesDialog;
 import com.aniruddhc.acemusic.player.Helpers.UIElementsHelper;
 import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Utils.Common;

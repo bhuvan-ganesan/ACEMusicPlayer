@@ -21,11 +21,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.aniruddhc.acemusic.player.NowPlayingActivity.NowPlayingActivity;
+import com.aniruddhc.acemusic.player.R;
+import com.aniruddhc.acemusic.player.Utils.Common;
 import com.google.android.apps.dashclock.api.DashClockExtension;
 import com.google.android.apps.dashclock.api.ExtensionData;
-import com.aniruddhc.acemusic.player.R;
-import com.aniruddhc.acemusic.player.NowPlayingActivity.NowPlayingActivity;
-import com.aniruddhc.acemusic.player.Utils.Common;
 
 public class DashClockExtensionService extends DashClockExtension {
 	

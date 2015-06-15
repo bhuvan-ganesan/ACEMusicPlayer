@@ -15,10 +15,10 @@
  */
 package com.aniruddhc.acemusic.player.Helpers;
 
-import java.util.Hashtable;
-
 import android.content.Context;
 import android.graphics.Typeface;
+
+import java.util.Hashtable;
 
 //Caches the custom fonts in memory to improve rendering performance.
 public class TypefaceHelper {

@@ -30,10 +30,10 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
 import com.aniruddhc.acemusic.player.Helpers.UIElementsHelper;
 import com.aniruddhc.acemusic.player.MusicLibraryEditorActivity.MusicLibraryEditorAlbumsMultiselectAdapter.AsyncGetAlbumSongIds;
+import com.aniruddhc.acemusic.player.R;
 
 public class AlbumsPickerFragment extends Fragment {
 	

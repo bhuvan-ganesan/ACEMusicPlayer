@@ -15,23 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.Dialogs;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-
-import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.audio.exceptions.CannotReadException;
-import org.jaudiotagger.audio.exceptions.CannotWriteException;
-import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
-import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
-import org.jaudiotagger.tag.FieldDataInvalidException;
-import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.KeyNotFoundException;
-import org.jaudiotagger.tag.Tag;
-import org.jaudiotagger.tag.TagException;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -53,9 +36,26 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
+import com.aniruddhc.acemusic.player.R;
+
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.CannotWriteException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.FieldDataInvalidException;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.KeyNotFoundException;
+import org.jaudiotagger.tag.Tag;
+import org.jaudiotagger.tag.TagException;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 public class ID3sArtistEditorDialog extends DialogFragment {
 

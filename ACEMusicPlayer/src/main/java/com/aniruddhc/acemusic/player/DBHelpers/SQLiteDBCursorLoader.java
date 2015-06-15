@@ -15,16 +15,16 @@
  */
 package com.aniruddhc.acemusic.player.DBHelpers;
 
-import java.io.FileDescriptor;
-import java.io.PrintWriter;
-import java.util.Arrays;
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.content.AsyncTaskLoader;
+
+import java.io.FileDescriptor;
+import java.io.PrintWriter;
+import java.util.Arrays;
 
 /*********************************************************************************
  * Custom CursorLoader class that adds support for SQLite databases.

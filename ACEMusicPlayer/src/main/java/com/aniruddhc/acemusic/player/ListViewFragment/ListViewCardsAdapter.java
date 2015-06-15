@@ -40,9 +40,9 @@ import com.aniruddhc.acemusic.player.Dialogs.CautionEditArtistsDialog;
 import com.aniruddhc.acemusic.player.Dialogs.ID3sArtistEditorDialog;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
 import com.aniruddhc.acemusic.player.Helpers.UIElementsHelper;
+import com.aniruddhc.acemusic.player.ImageTransformers.PicassoCircularTransformer;
 import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Utils.Common;
-import com.aniruddhc.acemusic.player.ImageTransformers.PicassoCircularTransformer;
 
 import java.util.HashMap;
 

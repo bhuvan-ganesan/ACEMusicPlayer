@@ -23,8 +23,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
+import com.aniruddhc.acemusic.player.R;
 
 public class ReadyToScanFragment extends Fragment {
 	

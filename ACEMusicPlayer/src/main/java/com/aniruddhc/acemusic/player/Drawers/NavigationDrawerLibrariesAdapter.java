@@ -26,9 +26,9 @@ import android.widget.ImageView;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
+import com.aniruddhc.acemusic.player.R;
 
 public class NavigationDrawerLibrariesAdapter extends SimpleCursorAdapter implements SpinnerAdapter {
 	

@@ -38,9 +38,9 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.AsyncTasks.AsyncSaveMusicFoldersTask;
 import com.aniruddhc.acemusic.player.MiscFragments.BuildingLibraryProgressFragment;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Services.BuildMusicLibraryService;
 import com.aniruddhc.acemusic.player.Utils.Common;
 import com.viewpagerindicator.LinePageIndicator;
@@ -348,10 +348,8 @@ public class WelcomeActivity extends FragmentActivity {
         	case 2:
         		return new AlbumArtFragment();
         	case 3:
-        		return new GooglePlayMusicFragment();
-        	case 4:
         		return new ReadyToScanFragment();
-        	case 5:
+        	case 4:
         		mBuildingLibraryProgressFragment = new BuildingLibraryProgressFragment();
         		return mBuildingLibraryProgressFragment;
         	default:
@@ -362,7 +360,7 @@ public class WelcomeActivity extends FragmentActivity {
 
 		@Override
 		public int getCount() {
-			return 6;
+			return 5;
 		}
         
 	}

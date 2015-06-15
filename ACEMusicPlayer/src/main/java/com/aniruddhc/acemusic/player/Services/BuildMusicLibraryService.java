@@ -25,8 +25,8 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.AsyncTasks.AsyncBuildLibraryTask;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.WelcomeActivity.WelcomeActivity;
 
 public class BuildMusicLibraryService extends Service implements AsyncBuildLibraryTask.OnBuildLibraryProgressUpdate {

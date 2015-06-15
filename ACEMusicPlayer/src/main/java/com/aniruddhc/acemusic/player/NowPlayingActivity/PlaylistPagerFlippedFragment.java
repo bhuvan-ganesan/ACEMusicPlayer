@@ -15,20 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.NowPlayingActivity;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.audio.exceptions.CannotReadException;
-import org.jaudiotagger.audio.exceptions.CannotWriteException;
-import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
-import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
-import org.jaudiotagger.tag.FieldDataInvalidException;
-import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.KeyNotFoundException;
-import org.jaudiotagger.tag.Tag;
-
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -47,10 +33,24 @@ import android.widget.RatingBar.OnRatingBarChangeListener;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Utils.Common;
+
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.CannotWriteException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.FieldDataInvalidException;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.KeyNotFoundException;
+import org.jaudiotagger.tag.Tag;
+
+import java.io.File;
+import java.io.IOException;
 
 public class PlaylistPagerFlippedFragment extends Fragment {
 

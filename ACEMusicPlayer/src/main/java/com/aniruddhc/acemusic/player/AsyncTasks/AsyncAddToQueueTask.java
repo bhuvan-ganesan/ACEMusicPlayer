@@ -22,9 +22,9 @@ import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
 import com.aniruddhc.acemusic.player.NowPlayingActivity.NowPlayingActivity;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Services.AudioPlaybackService;
 import com.aniruddhc.acemusic.player.Utils.Common;
 

@@ -15,15 +15,15 @@
  */
 package com.aniruddhc.acemusic.player.AsyncTasks;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 
 import com.aniruddhc.acemusic.player.R;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 /***********************************************************************************
  * This task goes through the specified parent folder and retrieves the canonical 

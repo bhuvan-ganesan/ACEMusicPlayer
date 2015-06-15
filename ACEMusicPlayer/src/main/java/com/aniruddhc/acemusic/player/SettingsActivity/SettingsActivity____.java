@@ -15,8 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.SettingsActivity;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -47,14 +45,13 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.aniruddhc.acemusic.player.R;
-import com.aniruddhc.acemusic.player.AsyncTasks.AsyncGoogleMusicAuthenticationTask;
 import com.aniruddhc.acemusic.player.BlacklistManagerActivity.BlacklistManagerActivity;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
 import com.aniruddhc.acemusic.player.Helpers.UIElementsHelper;
 import com.aniruddhc.acemusic.player.InAppBilling.IabHelper;
 import com.aniruddhc.acemusic.player.InAppBilling.IabResult;
 import com.aniruddhc.acemusic.player.InAppBilling.Purchase;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Services.AutoFetchAlbumArtService;
 import com.aniruddhc.acemusic.player.Utils.Common;
 

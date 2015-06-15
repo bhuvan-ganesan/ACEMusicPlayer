@@ -26,8 +26,8 @@ import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.TextView;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
+import com.aniruddhc.acemusic.player.R;
 
 public class ViewPlaylistInformationDialog extends DialogFragment {
 

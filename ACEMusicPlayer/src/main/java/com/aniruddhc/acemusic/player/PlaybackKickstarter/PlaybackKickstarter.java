@@ -23,9 +23,9 @@ import android.provider.MediaStore;
 import android.widget.Toast;
 
 import com.aniruddhc.acemusic.player.DBHelpers.MediaStoreAccessHelper;
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.NowPlayingActivity.NowPlayingActivity;
 import com.aniruddhc.acemusic.player.NowPlayingActivity.NowPlayingActivity.NowPlayingActivityListener;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Services.AudioPlaybackService;
 import com.aniruddhc.acemusic.player.Services.AudioPlaybackService.PrepareServiceListener;
 import com.aniruddhc.acemusic.player.Utils.Common;

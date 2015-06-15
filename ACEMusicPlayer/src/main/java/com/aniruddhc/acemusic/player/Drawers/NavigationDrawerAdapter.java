@@ -15,8 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.Drawers;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
@@ -25,11 +23,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
 import com.aniruddhc.acemusic.player.Helpers.UIElementsHelper;
 import com.aniruddhc.acemusic.player.MainActivity.MainActivity;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Utils.Common;
+
+import java.util.ArrayList;
 
 public class NavigationDrawerAdapter extends ArrayAdapter<String> {
 

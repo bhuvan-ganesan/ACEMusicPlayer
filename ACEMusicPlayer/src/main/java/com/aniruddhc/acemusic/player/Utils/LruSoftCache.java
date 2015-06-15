@@ -15,12 +15,12 @@
  */
 package com.aniruddhc.acemusic.player.Utils;
 
+import android.content.Context;
+import android.util.Log;
+
 import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import android.content.Context;
-import android.util.Log;
 
 /**
  * Static library version of {@code android.util.LruCache}. Used to write apps

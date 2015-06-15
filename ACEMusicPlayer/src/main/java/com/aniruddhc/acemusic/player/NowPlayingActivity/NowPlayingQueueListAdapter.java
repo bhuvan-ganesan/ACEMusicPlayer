@@ -15,8 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.NowPlayingActivity;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
@@ -26,11 +24,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
 import com.aniruddhc.acemusic.player.Helpers.UIElementsHelper;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Utils.Common;
+
+import java.util.ArrayList;
 
 public class NowPlayingQueueListAdapter extends ArrayAdapter<Integer> {
 

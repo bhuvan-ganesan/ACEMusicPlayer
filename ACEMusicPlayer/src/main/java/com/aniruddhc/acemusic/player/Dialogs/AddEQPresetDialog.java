@@ -26,9 +26,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.EqualizerActivity.EqualizerActivity;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Utils.Common;
 
 public class AddEQPresetDialog extends DialogFragment {

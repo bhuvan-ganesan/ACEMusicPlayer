@@ -15,10 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.AsyncTasks;
 
-import java.io.File;
-
-import org.apache.commons.io.FileUtils;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -26,8 +22,12 @@ import android.content.DialogInterface.OnClickListener;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.FoldersFragment.FilesFoldersFragment;
+import com.aniruddhc.acemusic.player.R;
+
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
 
 public class AsyncCopyMoveTask extends AsyncTask<String, Void, Boolean> {
 	

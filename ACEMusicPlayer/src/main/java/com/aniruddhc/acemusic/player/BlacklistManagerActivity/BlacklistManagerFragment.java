@@ -15,8 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.BlacklistManagerActivity;
 
-import java.util.ArrayList;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.database.Cursor;
@@ -30,12 +28,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
 import com.aniruddhc.acemusic.player.Helpers.UIElementsHelper;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Utils.Common;
 import com.mobeta.android.dslv.DragSortListView;
+
+import java.util.ArrayList;
 
 /*******************************************************
  * Displays a list of blacklisted elements (which are 

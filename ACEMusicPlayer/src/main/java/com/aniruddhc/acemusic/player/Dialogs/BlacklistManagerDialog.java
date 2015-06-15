@@ -23,8 +23,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.BlacklistManagerActivity.BlacklistManagerActivity;
+import com.aniruddhc.acemusic.player.R;
 
 /*******************************************************
  * Allows the user to select the type of elements that 

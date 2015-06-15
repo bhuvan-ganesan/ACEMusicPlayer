@@ -15,9 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.Dialogs;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -32,10 +29,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
 import com.aniruddhc.acemusic.player.MusicLibraryEditorActivity.LibraryLabelsAdapter;
 import com.aniruddhc.acemusic.player.MusicLibraryEditorActivity.MusicLibraryEditorActivity;
+import com.aniruddhc.acemusic.player.R;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class AddMusicLibraryDialog extends DialogFragment {
 

@@ -15,6 +15,10 @@
  */
 package com.aniruddhc.acemusic.player.Utils;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Base64;
+
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.InvalidAlgorithmParameterException;
@@ -25,10 +29,6 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.util.Base64;
 
 public class Base64SharedPreferences {
 

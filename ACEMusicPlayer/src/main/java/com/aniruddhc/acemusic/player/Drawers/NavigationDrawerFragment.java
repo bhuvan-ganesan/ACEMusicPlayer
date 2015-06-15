@@ -15,10 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.Drawers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -38,12 +34,16 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.aniruddhc.acemusic.player.Helpers.UIElementsHelper;
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
+import com.aniruddhc.acemusic.player.Helpers.UIElementsHelper;
 import com.aniruddhc.acemusic.player.MainActivity.MainActivity;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.SettingsActivity.SettingsActivity;
 import com.aniruddhc.acemusic.player.Utils.Common;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class NavigationDrawerFragment extends Fragment {
 	

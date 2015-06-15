@@ -23,8 +23,8 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.AsyncTasks.AsyncAutoGetAlbumArtTask;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.SettingsActivity.SettingsActivity____;
 
 public class AutoFetchAlbumArtService extends Service {

@@ -15,8 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.Dialogs;
 
-import java.util.HashSet;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -29,11 +27,13 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.widget.Toast;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
 import com.aniruddhc.acemusic.player.MusicLibraryEditorActivity.EditDeleteMusicLibraryAdapter;
 import com.aniruddhc.acemusic.player.MusicLibraryEditorActivity.MusicLibraryEditorActivity;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Utils.Common;
+
+import java.util.HashSet;
 
 public class EditDeleteMusicLibraryDialog extends DialogFragment {
 	

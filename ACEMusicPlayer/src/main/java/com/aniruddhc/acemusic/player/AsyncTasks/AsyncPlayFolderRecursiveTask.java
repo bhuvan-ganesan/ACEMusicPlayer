@@ -15,10 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.AsyncTasks;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -29,9 +25,13 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.FoldersFragment.FileExtensionFilter;
 import com.aniruddhc.acemusic.player.NowPlayingActivity.NowPlayingActivity;
+import com.aniruddhc.acemusic.player.R;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class AsyncPlayFolderRecursiveTask extends AsyncTask<String, Void, Void> {
     private Activity mContext;

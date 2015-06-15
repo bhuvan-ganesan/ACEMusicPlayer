@@ -16,6 +16,7 @@
 package com.aniruddhc.acemusic.player.Helpers;
 
 import android.widget.AbsListView;
+
 import com.squareup.picasso.Picasso;
 
 public class PauseOnScrollHelper implements AbsListView.OnScrollListener {

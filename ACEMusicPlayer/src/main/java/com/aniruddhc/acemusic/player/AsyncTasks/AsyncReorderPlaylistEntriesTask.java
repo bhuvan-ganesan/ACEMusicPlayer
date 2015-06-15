@@ -15,11 +15,11 @@
  */
 package com.aniruddhc.acemusic.player.AsyncTasks;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+
+import java.util.ArrayList;
 
 public class AsyncReorderPlaylistEntriesTask extends AsyncTask<String, Integer, Boolean> {
     private Context mContext;

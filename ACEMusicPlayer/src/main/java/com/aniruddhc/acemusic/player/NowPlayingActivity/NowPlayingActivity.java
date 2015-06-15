@@ -58,8 +58,8 @@ import com.aniruddhc.acemusic.player.Drawers.QueueDrawerFragment;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
 import com.aniruddhc.acemusic.player.Helpers.UIElementsHelper;
 import com.aniruddhc.acemusic.player.R;
-import com.aniruddhc.acemusic.player.Utils.Common;
 import com.aniruddhc.acemusic.player.Transformers.ZoomOutPageTransformer;
+import com.aniruddhc.acemusic.player.Utils.Common;
 import com.velocity.view.pager.library.VelocityViewPager;
 
 import java.util.HashMap;

@@ -15,8 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.MusicLibraryEditorActivity;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
@@ -26,8 +24,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
+import com.aniruddhc.acemusic.player.R;
+
+import java.util.ArrayList;
 
 public class LibraryLabelsAdapter extends ArrayAdapter<String> {
 

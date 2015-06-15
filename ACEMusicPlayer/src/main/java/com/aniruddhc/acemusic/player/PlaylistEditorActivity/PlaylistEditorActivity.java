@@ -15,8 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.PlaylistEditorActivity;
 
-import java.util.HashSet;
-
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
@@ -38,6 +36,8 @@ import com.aniruddhc.acemusic.player.Utils.TypefaceSpan;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+
+import java.util.HashSet;
 
 public class PlaylistEditorActivity extends FragmentActivity {
 	

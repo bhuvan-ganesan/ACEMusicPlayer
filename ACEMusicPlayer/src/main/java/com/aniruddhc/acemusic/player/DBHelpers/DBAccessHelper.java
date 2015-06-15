@@ -15,9 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.DBHelpers;
 
-import java.util.HashMap;
-import java.util.HashSet;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -26,6 +23,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Utils.Common;
+
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * SQLite database implementation. Note that this class 

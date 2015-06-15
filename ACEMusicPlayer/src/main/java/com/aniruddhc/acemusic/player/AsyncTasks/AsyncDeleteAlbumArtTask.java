@@ -15,9 +15,18 @@
  */
 package com.aniruddhc.acemusic.player.AsyncTasks;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+import android.app.Activity;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.os.AsyncTask;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
+import com.aniruddhc.acemusic.player.R;
+import com.aniruddhc.acemusic.player.Utils.Common;
 
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -29,18 +38,9 @@ import org.jaudiotagger.tag.KeyNotFoundException;
 import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 
-import android.app.Activity;
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.os.AsyncTask;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.Toast;
-
-import com.aniruddhc.acemusic.player.R;
-import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
-import com.aniruddhc.acemusic.player.Utils.Common;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class AsyncDeleteAlbumArtTask extends AsyncTask<String, Void, Void> {
     private Context mContext;

@@ -31,10 +31,10 @@
 
 package com.aniruddhc.acemusic.player.RemoteControlClient;
 
-import java.lang.reflect.Method;
-
 import android.media.AudioManager;
 import android.util.Log;
+
+import java.lang.reflect.Method;
 
 /**
  * Contains methods to handle registering/unregistering remote control clients.  These methods only

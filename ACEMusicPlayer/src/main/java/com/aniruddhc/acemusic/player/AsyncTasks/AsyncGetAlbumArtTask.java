@@ -15,14 +15,18 @@
  */
 package com.aniruddhc.acemusic.player.AsyncTasks;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
+import android.os.Environment;
+import android.view.View;
+import android.widget.Toast;
+
+import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
+import com.aniruddhc.acemusic.player.R;
+import com.aniruddhc.acemusic.player.Utils.Common;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,18 +42,14 @@ import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.images.Artwork;
 import org.jaudiotagger.tag.images.ArtworkFactory;
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
-import android.os.Environment;
-import android.view.View;
-import android.widget.Toast;
-
-import com.aniruddhc.acemusic.player.R;
-import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
-import com.aniruddhc.acemusic.player.Utils.Common;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 
 public class AsyncGetAlbumArtTask extends AsyncTask<String, Void, Integer> {
     private Context mContext;

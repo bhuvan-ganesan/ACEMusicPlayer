@@ -15,8 +15,6 @@
  */
 package com.aniruddhc.acemusic.player.NowPlayingQueueActivity;
 
-import java.io.File;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -44,14 +42,16 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.DBHelpers.DBAccessHelper;
 import com.aniruddhc.acemusic.player.Helpers.TypefaceHelper;
 import com.aniruddhc.acemusic.player.Helpers.UIElementsHelper;
+import com.aniruddhc.acemusic.player.R;
 import com.aniruddhc.acemusic.player.Services.AudioPlaybackService;
 import com.aniruddhc.acemusic.player.Utils.Common;
 import com.mobeta.android.dslv.DragSortListView;
 import com.mobeta.android.dslv.SimpleFloatViewManager;
+
+import java.io.File;
 
 public class NowPlayingQueueFragment extends Fragment {
 
