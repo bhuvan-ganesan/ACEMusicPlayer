@@ -81,98 +81,623 @@ import java.util.Random;
  */
 public class AudioPlaybackService extends Service {
 
-    //Context and Intent.
-    private Context mContext;
-    private Service mService;
-
-    //Global Objects Provider.
-    private Common mApp;
-
-    //PrepareServiceListener instance.
-    private PrepareServiceListener mPrepareServiceListener;
-
-    //MediaPlayer objects and flags.
-    private MediaPlayer mMediaPlayer;
-    private MediaPlayer mMediaPlayer2;
-    private int mCurrentMediaPlayer = 1;
-    private boolean mFirstRun = true;
-
-    //AudioManager.
-    private AudioManager mAudioManager;
-    private AudioManagerHelper mAudioManagerHelper;
-
-    //Flags that indicate whether the mediaPlayers have been initialized.
-    private boolean mMediaPlayerPrepared = false;
-    private boolean mMediaPlayer2Prepared = false;
-
-    //Cursor object(s) that will guide the rest of this queue.
-    private Cursor mCursor;
-    private MergeCursor mMergeCursor;
-
-    //Holds the indeces of the current cursor, in the order that they'll be played.
-    private ArrayList<Integer> mPlaybackIndecesList = new ArrayList<Integer>();
-
-    //Holds the indeces of songs that were unplayable.
-    private ArrayList<Integer> mFailedIndecesList = new ArrayList<Integer>();
-
-    //Song data helpers for each MediaPlayer object.
-    private SongHelper mMediaPlayerSongHelper;
-    private SongHelper mMediaPlayer2SongHelper;
-
-    //Pointer variable.
-    private int mCurrentSongIndex;
-
-    //Equalizer/Audio FX helpers.
-    private EqualizerHelper mEqualizerHelper;
-
-    //Notification elements.
-    private NotificationCompat.Builder mNotificationBuilder;
     public static final int mNotificationId = 1080; //NOTE: Using 0 as a notification ID causes Android to ignore the notification call.
-
     //Custom actions for media player controls via the notification bar.
     public static final String LAUNCH_NOW_PLAYING_ACTION = "com.aniruddhc.acemusic.player.LAUNCH_NOW_PLAYING_ACTION";
     public static final String PREVIOUS_ACTION = "com.aniruddhc.acemusic.player.PREVIOUS_ACTION";
     public static final String PLAY_PAUSE_ACTION = "com.aniruddhc.acemusic.player.PLAY_PAUSE_ACTION";
     public static final String NEXT_ACTION = "com.aniruddhc.acemusic.player.NEXT_ACTION";
     public static final String STOP_SERVICE = "com.aniruddhc.acemusic.player.STOP_SERVICE";
+    //Temp placeholder for GMusic Uri.
+    public static final Uri URI_BEING_LOADED = Uri.parse("uri_being_loaded");
+    /**
+     * Error listener for mMediaPlayer.
+     */
+    public OnErrorListener onErrorListener = new OnErrorListener() {
 
+        @Override
+        public boolean onError(MediaPlayer mMediaPlayer, int what, int extra) {
+            /* This error listener might seem like it's not doing anything.
+			 * However, removing this will cause the mMediaPlayer object to go crazy
+			 * and skip around. The key here is to make this method return true. This
+			 * notifies the mMediaPlayer object that we've handled all errors and that
+			 * it shouldn't do anything else to try and remedy the situation.
+			 *
+			 * TL;DR: Don't touch this interface. Ever.
+			 */
+            return true;
+        }
+
+    };
+    //Context and Intent.
+    private Context mContext;
+    private Service mService;
+    //Global Objects Provider.
+    private Common mApp;
+    //PrepareServiceListener instance.
+    private PrepareServiceListener mPrepareServiceListener;
+    //MediaPlayer objects and flags.
+    private MediaPlayer mMediaPlayer;
+    private MediaPlayer mMediaPlayer2;
+    private int mCurrentMediaPlayer = 1;
+    /**
+     * Buffering listener.
+     */
+    public OnBufferingUpdateListener bufferingListener = new OnBufferingUpdateListener() {
+
+        @Override
+        public void onBufferingUpdate(MediaPlayer mp, int percent) {
+
+            if (mApp.getSharedPreferences().getBoolean("NOW_PLAYING_ACTIVE", false) == true) {
+
+                if (mp == getCurrentMediaPlayer()) {
+                    float max = mp.getDuration() / 1000;
+                    float maxDividedByHundred = max / 100;
+                    mApp.broadcastUpdateUICommand(new String[]{Common.UPDATE_BUFFERING_PROGRESS},
+                            new String[]{"" + (int) (percent * maxDividedByHundred)});
+                }
+
+            }
+
+        }
+
+    };
+    private boolean mFirstRun = true;
+    //AudioManager.
+    private AudioManager mAudioManager;
+    private AudioManagerHelper mAudioManagerHelper;
+    //Flags that indicate whether the mediaPlayers have been initialized.
+    private boolean mMediaPlayerPrepared = false;
+    private boolean mMediaPlayer2Prepared = false;
+    //Cursor object(s) that will guide the rest of this queue.
+    private Cursor mCursor;
+    private MergeCursor mMergeCursor;
+    //Holds the indeces of the current cursor, in the order that they'll be played.
+    private ArrayList<Integer> mPlaybackIndecesList = new ArrayList<Integer>();
+    //Holds the indeces of songs that were unplayable.
+    private ArrayList<Integer> mFailedIndecesList = new ArrayList<Integer>();
+    //Song data helpers for each MediaPlayer object.
+    private SongHelper mMediaPlayerSongHelper;
+    private SongHelper mMediaPlayer2SongHelper;
+    //Pointer variable.
+    private int mCurrentSongIndex;
+    //Equalizer/Audio FX helpers.
+    private EqualizerHelper mEqualizerHelper;
+    //Notification elements.
+    private NotificationCompat.Builder mNotificationBuilder;
+    /**
+     * Interface implementation to listen for service cursor events.
+     */
+    public BuildCursorListener buildCursorListener = new BuildCursorListener() {
+
+        @Override
+        public void onServiceCursorReady(Cursor cursor, int currentSongIndex, boolean playAll) {
+
+            if (cursor.getCount() == 0) {
+                Toast.makeText(mContext, R.string.no_audio_files_found, Toast.LENGTH_SHORT).show();
+                if (mApp.getNowPlayingActivity() != null)
+                    mApp.getNowPlayingActivity().finish();
+
+                return;
+            }
+
+            setCursor(cursor);
+            setCurrentSongIndex(currentSongIndex);
+            getFailedIndecesList().clear();
+            initPlaybackIndecesList(playAll);
+            mFirstRun = true;
+            prepareMediaPlayer(currentSongIndex);
+            //Notify NowPlayingActivity to initialize its ViewPager.
+            mApp.broadcastUpdateUICommand(new String[]{Common.INIT_PAGER},
+                    new String[]{""});
+        }
+
+        @Override
+        public void onServiceCursorFailed(String exceptionMessage) {
+            //We don't have a valid cursor, so stop the service.
+            Log.e("SERVICE CURSOR EXCEPTION", "onServiceCursorFailed(): " + exceptionMessage);
+            Toast.makeText(mContext, R.string.unable_to_start_playback, Toast.LENGTH_SHORT).show();
+            stopSelf();
+
+        }
+
+        @Override
+        public void onServiceCursorUpdated(Cursor cursor) {
+            //Make sure the new cursor and the old cursor are the same size.
+            if (getCursor().getCount() == cursor.getCount()) {
+                setCursor(cursor);
+            }
+
+        }
+
+    };
     //Indicates if an enqueue/queue reordering operation was performed on the original queue.
     private boolean mEnqueuePerformed = false;
-
     //Handler object.
     private Handler mHandler;
-
     //Volume variables that handle the crossfade effect.
     private float mFadeOutVolume = 1.0f;
     private float mFadeInVolume = 1.0f;
-
     //Headset plug receiver.
     private HeadsetPlugBroadcastReceiver mHeadsetPlugReceiver;
-
     //Crossfade.
     private int mCrossfadeDuration;
-
     //A-B Repeat variables.
     private int mRepeatSongRangePointA = 0;
     private int mRepeatSongRangePointB = 0;
-
     //Indicates if the user changed the track manually.
     private boolean mTrackChangedByUser = false;
-
     //RemoteControlClient for use with remote controls and ICS+ lockscreen controls.
     private RemoteControlClientCompat mRemoteControlClientCompat;
     private ComponentName mMediaButtonReceiverComponent;
-
     //Enqueue reorder scalar.
     private int mEnqueueReorderScalar = 0;
-
-    //Temp placeholder for GMusic Uri.
-    public static final Uri URI_BEING_LOADED = Uri.parse("uri_being_loaded");
-
     //Google Analytics.
 //    private GoogleAnalytics mGAInstance;
 //    private Tracker mTracker;
     private long mServiceStartTime;
+    /**
+     * Fades out volume before a duck operation.
+     */
+    private Runnable duckDownVolumeRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            if (mAudioManagerHelper.getCurrentVolume() > mAudioManagerHelper.getTargetVolume()) {
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
+                        (mAudioManagerHelper.getCurrentVolume() - mAudioManagerHelper.getStepDownIncrement()),
+                        0);
+
+                mAudioManagerHelper.setCurrentVolume(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+                mHandler.postDelayed(this, 50);
+            }
+
+        }
+
+    };
+    /**
+     * Fades in volume after a duck operation.
+     */
+    private Runnable duckUpVolumeRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            if (mAudioManagerHelper.getCurrentVolume() < mAudioManagerHelper.getTargetVolume()) {
+                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
+                        (mAudioManagerHelper.getCurrentVolume() + mAudioManagerHelper.getStepUpIncrement()),
+                        0);
+
+                mAudioManagerHelper.setCurrentVolume(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+                mHandler.postDelayed(this, 50);
+            }
+
+        }
+
+    };
+
+    /**
+     * Initializes remote control clients for this service session.
+     * Currently used for lockscreen controls.
+     * 	public void initRemoteControlClient() {
+     if (mRemoteControlClientCompat==null) {
+     Intent remoteControlIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+     remoteControlIntent.setComponent(mMediaButtonReceiverComponent);
+
+     mRemoteControlClientCompat = new RemoteControlClientCompat(PendingIntent.getBroadcast(mContext, 0, remoteControlIntent, 0));
+     RemoteControlHelper.registerRemoteControlClient(mAudioManager, mRemoteControlClientCompat);
+
+     }
+
+     mRemoteControlClientCompat.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
+     mRemoteControlClientCompat.setTransportControlFlags(RemoteControlClient.FLAG_KEY_MEDIA_PLAY |
+     RemoteControlClient.FLAG_KEY_MEDIA_PAUSE |
+     RemoteControlClient.FLAG_KEY_MEDIA_NEXT |
+     RemoteControlClient.FLAG_KEY_MEDIA_STOP |
+     RemoteControlClient.FLAG_KEY_MEDIA_PREVIOUS);
+
+     }
+     */
+    /**
+     * Listens for audio focus changes and reacts accordingly.
+     */
+    private OnAudioFocusChangeListener audioFocusChangeListener = new OnAudioFocusChangeListener() {
+
+        @Override
+        public void onAudioFocusChange(int focusChange) {
+            if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
+                //We've temporarily lost focus, so pause the mMediaPlayer, wherever it's at.
+                try {
+                    getCurrentMediaPlayer().pause();
+                    updateNotification(mApp.getService().getCurrentSong());
+                    updateWidgets();
+                    scrobbleTrack(SimpleLastFMHelper.PAUSE);
+                    mAudioManagerHelper.setHasAudioFocus(false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
+                //Lower the current mMediaPlayer volume.
+                mAudioManagerHelper.setAudioDucked(true);
+                mAudioManagerHelper.setTargetVolume(5);
+                mAudioManagerHelper.setStepDownIncrement(1);
+                mAudioManagerHelper.setCurrentVolume(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+                mAudioManagerHelper.setOriginalVolume(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+                mHandler.post(duckDownVolumeRunnable);
+
+            } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+
+                if (mAudioManagerHelper.isAudioDucked()) {
+                    //Crank the volume back up again.
+                    mAudioManagerHelper.setTargetVolume(mAudioManagerHelper.getOriginalVolume());
+                    mAudioManagerHelper.setStepUpIncrement(1);
+                    mAudioManagerHelper.setCurrentVolume(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
+
+                    mHandler.post(duckUpVolumeRunnable);
+                    mAudioManagerHelper.setAudioDucked(false);
+                } else {
+                    //We've regained focus. Update the audioFocus tag, but don't start the mMediaPlayer.
+                    mAudioManagerHelper.setHasAudioFocus(true);
+
+                }
+
+            } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+                //We've lost focus permanently so pause the service. We'll have to request focus again later.
+                getCurrentMediaPlayer().pause();
+                updateNotification(mApp.getService().getCurrentSong());
+                updateWidgets();
+                scrobbleTrack(SimpleLastFMHelper.PAUSE);
+                mAudioManagerHelper.setHasAudioFocus(false);
+
+            }
+
+        }
+
+    };
+    /**
+     * Crossfade runnable.
+     */
+    public Runnable crossFadeRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            try {
+
+                //Do not crossfade if the current song is set to repeat itself.
+                if (getRepeatMode() != Common.REPEAT_SONG) {
+
+                    //Do not crossfade if this is the last track in the queue.
+                    if (getCursor().getCount() > (mCurrentSongIndex + 1)) {
+
+                        //Set the next mMediaPlayer's volume and raise it incrementally.
+                        if (getCurrentMediaPlayer() == getMediaPlayer()) {
+
+                            getMediaPlayer2().setVolume(mFadeInVolume, mFadeInVolume);
+                            getMediaPlayer().setVolume(mFadeOutVolume, mFadeOutVolume);
+
+                            //If the mMediaPlayer is already playing or it hasn't been prepared yet, we can't use crossfade.
+                            if (!getMediaPlayer2().isPlaying()) {
+
+                                if (mMediaPlayer2Prepared == true) {
+
+                                    if (checkAndRequestAudioFocus() == true) {
+
+                                        //Check if the the user requested to save the track's last playback position.
+                                        if (getMediaPlayer2SongHelper().getSavedPosition() != -1) {
+                                            //Seek to the saved track position.
+                                            getMediaPlayer2().seekTo((int) getMediaPlayer2SongHelper().getSavedPosition());
+                                            mApp.broadcastUpdateUICommand(new String[]{Common.SHOW_AUDIOBOOK_TOAST},
+                                                    new String[]{"" + getMediaPlayer2SongHelper().getSavedPosition()});
+
+                                        }
+
+                                        getMediaPlayer2().start();
+                                    } else {
+                                        return;
+                                    }
+
+                                }
+
+                            }
+
+                        } else {
+
+                            getMediaPlayer().setVolume(mFadeInVolume, mFadeInVolume);
+                            getMediaPlayer2().setVolume(mFadeOutVolume, mFadeOutVolume);
+
+                            //If the mMediaPlayer is already playing or it hasn't been prepared yet, we can't use crossfade.
+                            if (!getMediaPlayer().isPlaying()) {
+
+                                if (mMediaPlayerPrepared == true) {
+
+                                    if (checkAndRequestAudioFocus() == true) {
+
+                                        //Check if the the user requested to save the track's last playback position.
+                                        if (getMediaPlayerSongHelper().getSavedPosition() != -1) {
+                                            //Seek to the saved track position.
+                                            getMediaPlayer().seekTo((int) getMediaPlayerSongHelper().getSavedPosition());
+                                            mApp.broadcastUpdateUICommand(new String[]{Common.SHOW_AUDIOBOOK_TOAST},
+                                                    new String[]{"" + getMediaPlayerSongHelper().getSavedPosition()});
+
+                                        }
+
+                                        getMediaPlayer().start();
+                                    } else {
+                                        return;
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                        mFadeInVolume = mFadeInVolume + (float) (1.0f / (((float) mCrossfadeDuration) * 10.0f));
+                        mFadeOutVolume = mFadeOutVolume - (float) (1.0f / (((float) mCrossfadeDuration) * 10.0f));
+
+                        mHandler.postDelayed(crossFadeRunnable, 100);
+                    }
+
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    };
+    /**
+     * First runnable that handles the cross fade operation between two tracks.
+     */
+    public Runnable startCrossFadeRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+
+            //Check if we're in the last part of the current song.
+            try {
+                if (getCurrentMediaPlayer().isPlaying()) {
+
+                    int currentTrackDuration = getCurrentMediaPlayer().getDuration();
+                    int currentTrackFadePosition = currentTrackDuration - (mCrossfadeDuration * 1000);
+                    if (getCurrentMediaPlayer().getCurrentPosition() >= currentTrackFadePosition) {
+                        //Launch the next runnable that will handle the cross fade effect.
+                        mHandler.postDelayed(crossFadeRunnable, 100);
+
+                    } else {
+                        mHandler.postDelayed(startCrossFadeRunnable, 1000);
+                    }
+
+                } else {
+                    mHandler.postDelayed(startCrossFadeRunnable, 1000);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    };
+    /**
+     * Starts mMediaPlayer if it is prepared and ready for playback.
+     * Otherwise, continues checking every 100ms if mMediaPlayer is prepared.
+     */
+    private Runnable startMediaPlayerIfPrepared = new Runnable() {
+
+        @Override
+        public void run() {
+            if (isMediaPlayerPrepared())
+                startMediaPlayer();
+            else
+                mHandler.postDelayed(this, 100);
+
+
+        }
+
+    };
+    /**
+     * Completion listener for mMediaPlayer2.
+     */
+    private OnCompletionListener onMediaPlayer2Completed = new OnCompletionListener() {
+
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+
+            //Remove the crossfade playback.
+            mHandler.removeCallbacks(startCrossFadeRunnable);
+            mHandler.removeCallbacks(crossFadeRunnable);
+
+            //Set the track position handler (notifies the handler when the track should start being faded).
+            if (mHandler != null && mApp.isCrossfadeEnabled()) {
+                mHandler.post(startCrossFadeRunnable);
+            }
+
+            //Reset the fadeVolume variables.
+            mFadeInVolume = 0.0f;
+            mFadeOutVolume = 1.0f;
+
+            //Reset the volumes for both mediaPlayers.
+            getMediaPlayer().setVolume(1.0f, 1.0f);
+            getMediaPlayer2().setVolume(1.0f, 1.0f);
+
+            try {
+                if (isAtEndOfQueue() && getRepeatMode() != Common.REPEAT_PLAYLIST) {
+                    stopSelf();
+                } else if (isMediaPlayerPrepared()) {
+                    startMediaPlayer();
+                } else {
+                    //Check every 100ms if mMediaPlayer is prepared.
+                    mHandler.post(startMediaPlayerIfPrepared);
+                }
+
+            } catch (IllegalStateException e) {
+                //mMediaPlayer isn't prepared yet.
+                mHandler.post(startMediaPlayerIfPrepared);
+            }
+
+        }
+
+    };
+    /**
+     * Called once mMediaPlayer2 is prepared.
+     */
+    public OnPreparedListener mediaPlayer2Prepared = new OnPreparedListener() {
+
+        @Override
+        public void onPrepared(MediaPlayer mediaPlayer) {
+
+            //Update the prepared flag.
+            setIsMediaPlayer2Prepared(true);
+
+            //Set the completion listener for mMediaPlayer2.
+            getMediaPlayer2().setOnCompletionListener(onMediaPlayer2Completed);
+
+            //Check to make sure we have AudioFocus.
+            if (checkAndRequestAudioFocus() == true) {
+
+                //Check if the the user saved the track's last playback position.
+                if (getMediaPlayer2SongHelper().getSavedPosition() != -1) {
+                    //Seek to the saved track position.
+                    mMediaPlayer2.seekTo((int) getMediaPlayer2SongHelper().getSavedPosition());
+                    mApp.broadcastUpdateUICommand(new String[]{Common.SHOW_AUDIOBOOK_TOAST},
+                            new String[]{"" + getMediaPlayer2SongHelper().getSavedPosition()});
+
+                }
+
+            } else {
+                return;
+            }
+
+        }
+
+    };
+    /**
+     * Starts mMediaPlayer if it is prepared and ready for playback.
+     * Otherwise, continues checking every 100ms if mMediaPlayer2 is prepared.
+     */
+    private Runnable startMediaPlayer2IfPrepared = new Runnable() {
+
+        @Override
+        public void run() {
+            if (isMediaPlayer2Prepared())
+                startMediaPlayer2();
+            else
+                mHandler.postDelayed(this, 100);
+
+
+        }
+
+    };
+    /**
+     * Completion listener for mMediaPlayer.
+     */
+    private OnCompletionListener onMediaPlayerCompleted = new OnCompletionListener() {
+
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+
+            //Remove the crossfade playback.
+            mHandler.removeCallbacks(startCrossFadeRunnable);
+            mHandler.removeCallbacks(crossFadeRunnable);
+
+            //Set the track position handler (notifies the handler when the track should start being faded).
+            if (mHandler != null && mApp.isCrossfadeEnabled()) {
+                mHandler.post(startCrossFadeRunnable);
+            }
+
+            //Reset the fadeVolume variables.
+            mFadeInVolume = 0.0f;
+            mFadeOutVolume = 1.0f;
+
+            //Reset the volumes for both mediaPlayers.
+            getMediaPlayer().setVolume(1.0f, 1.0f);
+            getMediaPlayer2().setVolume(1.0f, 1.0f);
+
+            try {
+                if (isAtEndOfQueue() && getRepeatMode() != Common.REPEAT_PLAYLIST) {
+                    stopSelf();
+                } else if (isMediaPlayer2Prepared()) {
+                    startMediaPlayer2();
+                } else {
+                    //Check every 100ms if mMediaPlayer2 is prepared.
+                    mHandler.post(startMediaPlayer2IfPrepared);
+                }
+
+            } catch (IllegalStateException e) {
+                //mMediaPlayer2 isn't prepared yet.
+                mHandler.post(startMediaPlayer2IfPrepared);
+            }
+
+        }
+
+    };
+    /**
+     * Called once mMediaPlayer is prepared.
+     */
+    public OnPreparedListener mediaPlayerPrepared = new OnPreparedListener() {
+
+        @Override
+        public void onPrepared(MediaPlayer mediaPlayer) {
+
+            //Update the prepared flag.
+            setIsMediaPlayerPrepared(true);
+
+            //Set the completion listener for mMediaPlayer.
+            getMediaPlayer().setOnCompletionListener(onMediaPlayerCompleted);
+
+            //Check to make sure we have AudioFocus.
+            if (checkAndRequestAudioFocus() == true) {
+
+                //Check if the the user saved the track's last playback position.
+                if (getMediaPlayerSongHelper().getSavedPosition() != -1) {
+                    //Seek to the saved track position.
+                    mMediaPlayer.seekTo((int) getMediaPlayerSongHelper().getSavedPosition());
+                    mApp.broadcastUpdateUICommand(new String[]{Common.SHOW_AUDIOBOOK_TOAST},
+                            new String[]{"" + getMediaPlayerSongHelper().getSavedPosition()});
+
+                }
+
+                //This is the first time mMediaPlayer has been prepared, so start it immediately.
+                if (mFirstRun) {
+                    startMediaPlayer();
+                    mFirstRun = false;
+                }
+
+            } else {
+                return;
+            }
+
+        }
+
+    };
+    /**
+     * Called repetitively to check for A-B repeat markers.
+     */
+    private Runnable checkABRepeatRange = new Runnable() {
+
+        @Override
+        public void run() {
+            try {
+                if (getCurrentMediaPlayer().isPlaying()) {
+
+                    if (getCurrentMediaPlayer().getCurrentPosition() >= (mRepeatSongRangePointB)) {
+                        getCurrentMediaPlayer().seekTo(mRepeatSongRangePointA);
+                    }
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (mApp.getSharedPreferences().getInt(Common.REPEAT_MODE, Common.REPEAT_OFF) == Common.A_B_REPEAT) {
+                mHandler.postDelayed(checkABRepeatRange, 100);
+            }
+
+        }
+
+    };
 
     /**
      * Constructor that should be used whenever this
@@ -251,29 +776,6 @@ public class AudioPlaybackService extends Service {
     }
 
     /**
-     * Public interface that provides access to
-     * major events during the service startup
-     * process.
-     *
-     * @author Saravan Pantham
-     */
-    public interface PrepareServiceListener {
-
-        /**
-         * Called when the service is up and running.
-         */
-        public void onServiceRunning(AudioPlaybackService service);
-
-        /**
-         * Called when the service failed to start.
-         * Also returns the failure reason via the exception
-         * parameter.
-         */
-        public void onServiceFailed(Exception exception);
-
-    }
-
-    /**
      * Initializes Google Analytics.
      */
     private void initGoogleAnalytics() {
@@ -297,30 +799,6 @@ public class AudioPlaybackService extends Service {
         }
 
     }
-
-    /**
-     * Initializes remote control clients for this service session.
-     * Currently used for lockscreen controls.
-     * 	public void initRemoteControlClient() {
-     if (mRemoteControlClientCompat==null) {
-     Intent remoteControlIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
-     remoteControlIntent.setComponent(mMediaButtonReceiverComponent);
-
-     mRemoteControlClientCompat = new RemoteControlClientCompat(PendingIntent.getBroadcast(mContext, 0, remoteControlIntent, 0));
-     RemoteControlHelper.registerRemoteControlClient(mAudioManager, mRemoteControlClientCompat);
-
-     }
-
-     mRemoteControlClientCompat.setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
-     mRemoteControlClientCompat.setTransportControlFlags(RemoteControlClient.FLAG_KEY_MEDIA_PLAY |
-     RemoteControlClient.FLAG_KEY_MEDIA_PAUSE |
-     RemoteControlClient.FLAG_KEY_MEDIA_NEXT |
-     RemoteControlClient.FLAG_KEY_MEDIA_STOP |
-     RemoteControlClient.FLAG_KEY_MEDIA_PREVIOUS);
-
-     }
-     */
-
 
     /**
      * Initializes the MediaPlayer objects for this service session.
@@ -1135,7 +1613,7 @@ public class AudioPlaybackService extends Service {
             for (int j = 0; j < newCursor.getCount(); j++) {
 /*				newCursor.moveToPosition(j);
                 filePath = newCursor.getString(newCursor.getColumnIndex(DBAccessHelper.PLAYLIST_SONG_FILE_PATH));
-				
+
 				try {
 					mMMDR.setDataSource(filePath);
 				} catch (Exception e) {
@@ -1168,473 +1646,6 @@ public class AudioPlaybackService extends Service {
     }
 
     /**
-     * Listens for audio focus changes and reacts accordingly.
-     */
-    private OnAudioFocusChangeListener audioFocusChangeListener = new OnAudioFocusChangeListener() {
-
-        @Override
-        public void onAudioFocusChange(int focusChange) {
-            if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
-                //We've temporarily lost focus, so pause the mMediaPlayer, wherever it's at.
-                try {
-                    getCurrentMediaPlayer().pause();
-                    updateNotification(mApp.getService().getCurrentSong());
-                    updateWidgets();
-                    scrobbleTrack(SimpleLastFMHelper.PAUSE);
-                    mAudioManagerHelper.setHasAudioFocus(false);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
-                //Lower the current mMediaPlayer volume.
-                mAudioManagerHelper.setAudioDucked(true);
-                mAudioManagerHelper.setTargetVolume(5);
-                mAudioManagerHelper.setStepDownIncrement(1);
-                mAudioManagerHelper.setCurrentVolume(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
-                mAudioManagerHelper.setOriginalVolume(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
-                mHandler.post(duckDownVolumeRunnable);
-
-            } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-
-                if (mAudioManagerHelper.isAudioDucked()) {
-                    //Crank the volume back up again.
-                    mAudioManagerHelper.setTargetVolume(mAudioManagerHelper.getOriginalVolume());
-                    mAudioManagerHelper.setStepUpIncrement(1);
-                    mAudioManagerHelper.setCurrentVolume(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
-
-                    mHandler.post(duckUpVolumeRunnable);
-                    mAudioManagerHelper.setAudioDucked(false);
-                } else {
-                    //We've regained focus. Update the audioFocus tag, but don't start the mMediaPlayer.
-                    mAudioManagerHelper.setHasAudioFocus(true);
-
-                }
-
-            } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
-                //We've lost focus permanently so pause the service. We'll have to request focus again later.
-                getCurrentMediaPlayer().pause();
-                updateNotification(mApp.getService().getCurrentSong());
-                updateWidgets();
-                scrobbleTrack(SimpleLastFMHelper.PAUSE);
-                mAudioManagerHelper.setHasAudioFocus(false);
-
-            }
-
-        }
-
-    };
-
-    /**
-     * Fades out volume before a duck operation.
-     */
-    private Runnable duckDownVolumeRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            if (mAudioManagerHelper.getCurrentVolume() > mAudioManagerHelper.getTargetVolume()) {
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
-                        (mAudioManagerHelper.getCurrentVolume() - mAudioManagerHelper.getStepDownIncrement()),
-                        0);
-
-                mAudioManagerHelper.setCurrentVolume(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
-                mHandler.postDelayed(this, 50);
-            }
-
-        }
-
-    };
-
-    /**
-     * Fades in volume after a duck operation.
-     */
-    private Runnable duckUpVolumeRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            if (mAudioManagerHelper.getCurrentVolume() < mAudioManagerHelper.getTargetVolume()) {
-                mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
-                        (mAudioManagerHelper.getCurrentVolume() + mAudioManagerHelper.getStepUpIncrement()),
-                        0);
-
-                mAudioManagerHelper.setCurrentVolume(mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC));
-                mHandler.postDelayed(this, 50);
-            }
-
-        }
-
-    };
-
-    /**
-     * Called once mMediaPlayer is prepared.
-     */
-    public OnPreparedListener mediaPlayerPrepared = new OnPreparedListener() {
-
-        @Override
-        public void onPrepared(MediaPlayer mediaPlayer) {
-
-            //Update the prepared flag.
-            setIsMediaPlayerPrepared(true);
-
-            //Set the completion listener for mMediaPlayer.
-            getMediaPlayer().setOnCompletionListener(onMediaPlayerCompleted);
-
-            //Check to make sure we have AudioFocus.
-            if (checkAndRequestAudioFocus() == true) {
-
-                //Check if the the user saved the track's last playback position.
-                if (getMediaPlayerSongHelper().getSavedPosition() != -1) {
-                    //Seek to the saved track position.
-                    mMediaPlayer.seekTo((int) getMediaPlayerSongHelper().getSavedPosition());
-                    mApp.broadcastUpdateUICommand(new String[]{Common.SHOW_AUDIOBOOK_TOAST},
-                            new String[]{"" + getMediaPlayerSongHelper().getSavedPosition()});
-
-                }
-
-                //This is the first time mMediaPlayer has been prepared, so start it immediately.
-                if (mFirstRun) {
-                    startMediaPlayer();
-                    mFirstRun = false;
-                }
-
-            } else {
-                return;
-            }
-
-        }
-
-    };
-
-    /**
-     * Called once mMediaPlayer2 is prepared.
-     */
-    public OnPreparedListener mediaPlayer2Prepared = new OnPreparedListener() {
-
-        @Override
-        public void onPrepared(MediaPlayer mediaPlayer) {
-
-            //Update the prepared flag.
-            setIsMediaPlayer2Prepared(true);
-
-            //Set the completion listener for mMediaPlayer2.
-            getMediaPlayer2().setOnCompletionListener(onMediaPlayer2Completed);
-
-            //Check to make sure we have AudioFocus.
-            if (checkAndRequestAudioFocus() == true) {
-
-                //Check if the the user saved the track's last playback position.
-                if (getMediaPlayer2SongHelper().getSavedPosition() != -1) {
-                    //Seek to the saved track position.
-                    mMediaPlayer2.seekTo((int) getMediaPlayer2SongHelper().getSavedPosition());
-                    mApp.broadcastUpdateUICommand(new String[]{Common.SHOW_AUDIOBOOK_TOAST},
-                            new String[]{"" + getMediaPlayer2SongHelper().getSavedPosition()});
-
-                }
-
-            } else {
-                return;
-            }
-
-        }
-
-    };
-
-    /**
-     * Completion listener for mMediaPlayer.
-     */
-    private OnCompletionListener onMediaPlayerCompleted = new OnCompletionListener() {
-
-        @Override
-        public void onCompletion(MediaPlayer mp) {
-
-            //Remove the crossfade playback.
-            mHandler.removeCallbacks(startCrossFadeRunnable);
-            mHandler.removeCallbacks(crossFadeRunnable);
-
-            //Set the track position handler (notifies the handler when the track should start being faded).
-            if (mHandler != null && mApp.isCrossfadeEnabled()) {
-                mHandler.post(startCrossFadeRunnable);
-            }
-
-            //Reset the fadeVolume variables.
-            mFadeInVolume = 0.0f;
-            mFadeOutVolume = 1.0f;
-
-            //Reset the volumes for both mediaPlayers.
-            getMediaPlayer().setVolume(1.0f, 1.0f);
-            getMediaPlayer2().setVolume(1.0f, 1.0f);
-
-            try {
-                if (isAtEndOfQueue() && getRepeatMode() != Common.REPEAT_PLAYLIST) {
-                    stopSelf();
-                } else if (isMediaPlayer2Prepared()) {
-                    startMediaPlayer2();
-                } else {
-                    //Check every 100ms if mMediaPlayer2 is prepared.
-                    mHandler.post(startMediaPlayer2IfPrepared);
-                }
-
-            } catch (IllegalStateException e) {
-                //mMediaPlayer2 isn't prepared yet.
-                mHandler.post(startMediaPlayer2IfPrepared);
-            }
-
-        }
-
-    };
-
-    /**
-     * Completion listener for mMediaPlayer2.
-     */
-    private OnCompletionListener onMediaPlayer2Completed = new OnCompletionListener() {
-
-        @Override
-        public void onCompletion(MediaPlayer mp) {
-
-            //Remove the crossfade playback.
-            mHandler.removeCallbacks(startCrossFadeRunnable);
-            mHandler.removeCallbacks(crossFadeRunnable);
-
-            //Set the track position handler (notifies the handler when the track should start being faded).
-            if (mHandler != null && mApp.isCrossfadeEnabled()) {
-                mHandler.post(startCrossFadeRunnable);
-            }
-
-            //Reset the fadeVolume variables.
-            mFadeInVolume = 0.0f;
-            mFadeOutVolume = 1.0f;
-
-            //Reset the volumes for both mediaPlayers.
-            getMediaPlayer().setVolume(1.0f, 1.0f);
-            getMediaPlayer2().setVolume(1.0f, 1.0f);
-
-            try {
-                if (isAtEndOfQueue() && getRepeatMode() != Common.REPEAT_PLAYLIST) {
-                    stopSelf();
-                } else if (isMediaPlayerPrepared()) {
-                    startMediaPlayer();
-                } else {
-                    //Check every 100ms if mMediaPlayer is prepared.
-                    mHandler.post(startMediaPlayerIfPrepared);
-                }
-
-            } catch (IllegalStateException e) {
-                //mMediaPlayer isn't prepared yet.
-                mHandler.post(startMediaPlayerIfPrepared);
-            }
-
-        }
-
-    };
-
-    /**
-     * Buffering listener.
-     */
-    public OnBufferingUpdateListener bufferingListener = new OnBufferingUpdateListener() {
-
-        @Override
-        public void onBufferingUpdate(MediaPlayer mp, int percent) {
-
-            if (mApp.getSharedPreferences().getBoolean("NOW_PLAYING_ACTIVE", false) == true) {
-
-                if (mp == getCurrentMediaPlayer()) {
-                    float max = mp.getDuration() / 1000;
-                    float maxDividedByHundred = max / 100;
-                    mApp.broadcastUpdateUICommand(new String[]{Common.UPDATE_BUFFERING_PROGRESS},
-                            new String[]{"" + (int) (percent * maxDividedByHundred)});
-                }
-
-            }
-
-        }
-
-    };
-
-    /**
-     * Error listener for mMediaPlayer.
-     */
-    public OnErrorListener onErrorListener = new OnErrorListener() {
-
-        @Override
-        public boolean onError(MediaPlayer mMediaPlayer, int what, int extra) {
-			/* This error listener might seem like it's not doing anything. 
-			 * However, removing this will cause the mMediaPlayer object to go crazy 
-			 * and skip around. The key here is to make this method return true. This 
-			 * notifies the mMediaPlayer object that we've handled all errors and that 
-			 * it shouldn't do anything else to try and remedy the situation. 
-			 * 
-			 * TL;DR: Don't touch this interface. Ever.
-			 */
-            return true;
-        }
-
-    };
-
-    /**
-     * Starts mMediaPlayer if it is prepared and ready for playback.
-     * Otherwise, continues checking every 100ms if mMediaPlayer is prepared.
-     */
-    private Runnable startMediaPlayerIfPrepared = new Runnable() {
-
-        @Override
-        public void run() {
-            if (isMediaPlayerPrepared())
-                startMediaPlayer();
-            else
-                mHandler.postDelayed(this, 100);
-
-
-        }
-
-    };
-
-    /**
-     * Starts mMediaPlayer if it is prepared and ready for playback.
-     * Otherwise, continues checking every 100ms if mMediaPlayer2 is prepared.
-     */
-    private Runnable startMediaPlayer2IfPrepared = new Runnable() {
-
-        @Override
-        public void run() {
-            if (isMediaPlayer2Prepared())
-                startMediaPlayer2();
-            else
-                mHandler.postDelayed(this, 100);
-
-
-        }
-
-    };
-
-    /**
-     * First runnable that handles the cross fade operation between two tracks.
-     */
-    public Runnable startCrossFadeRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-
-            //Check if we're in the last part of the current song.
-            try {
-                if (getCurrentMediaPlayer().isPlaying()) {
-
-                    int currentTrackDuration = getCurrentMediaPlayer().getDuration();
-                    int currentTrackFadePosition = currentTrackDuration - (mCrossfadeDuration * 1000);
-                    if (getCurrentMediaPlayer().getCurrentPosition() >= currentTrackFadePosition) {
-                        //Launch the next runnable that will handle the cross fade effect.
-                        mHandler.postDelayed(crossFadeRunnable, 100);
-
-                    } else {
-                        mHandler.postDelayed(startCrossFadeRunnable, 1000);
-                    }
-
-                } else {
-                    mHandler.postDelayed(startCrossFadeRunnable, 1000);
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
-
-    };
-
-    /**
-     * Crossfade runnable.
-     */
-    public Runnable crossFadeRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            try {
-
-                //Do not crossfade if the current song is set to repeat itself.
-                if (getRepeatMode() != Common.REPEAT_SONG) {
-
-                    //Do not crossfade if this is the last track in the queue.
-                    if (getCursor().getCount() > (mCurrentSongIndex + 1)) {
-
-                        //Set the next mMediaPlayer's volume and raise it incrementally.
-                        if (getCurrentMediaPlayer() == getMediaPlayer()) {
-
-                            getMediaPlayer2().setVolume(mFadeInVolume, mFadeInVolume);
-                            getMediaPlayer().setVolume(mFadeOutVolume, mFadeOutVolume);
-
-                            //If the mMediaPlayer is already playing or it hasn't been prepared yet, we can't use crossfade.
-                            if (!getMediaPlayer2().isPlaying()) {
-
-                                if (mMediaPlayer2Prepared == true) {
-
-                                    if (checkAndRequestAudioFocus() == true) {
-
-                                        //Check if the the user requested to save the track's last playback position.
-                                        if (getMediaPlayer2SongHelper().getSavedPosition() != -1) {
-                                            //Seek to the saved track position.
-                                            getMediaPlayer2().seekTo((int) getMediaPlayer2SongHelper().getSavedPosition());
-                                            mApp.broadcastUpdateUICommand(new String[]{Common.SHOW_AUDIOBOOK_TOAST},
-                                                    new String[]{"" + getMediaPlayer2SongHelper().getSavedPosition()});
-
-                                        }
-
-                                        getMediaPlayer2().start();
-                                    } else {
-                                        return;
-                                    }
-
-                                }
-
-                            }
-
-                        } else {
-
-                            getMediaPlayer().setVolume(mFadeInVolume, mFadeInVolume);
-                            getMediaPlayer2().setVolume(mFadeOutVolume, mFadeOutVolume);
-
-                            //If the mMediaPlayer is already playing or it hasn't been prepared yet, we can't use crossfade.
-                            if (!getMediaPlayer().isPlaying()) {
-
-                                if (mMediaPlayerPrepared == true) {
-
-                                    if (checkAndRequestAudioFocus() == true) {
-
-                                        //Check if the the user requested to save the track's last playback position.
-                                        if (getMediaPlayerSongHelper().getSavedPosition() != -1) {
-                                            //Seek to the saved track position.
-                                            getMediaPlayer().seekTo((int) getMediaPlayerSongHelper().getSavedPosition());
-                                            mApp.broadcastUpdateUICommand(new String[]{Common.SHOW_AUDIOBOOK_TOAST},
-                                                    new String[]{"" + getMediaPlayerSongHelper().getSavedPosition()});
-
-                                        }
-
-                                        getMediaPlayer().start();
-                                    } else {
-                                        return;
-                                    }
-
-                                }
-
-                            }
-
-                        }
-
-                        mFadeInVolume = mFadeInVolume + (float) (1.0f / (((float) mCrossfadeDuration) * 10.0f));
-                        mFadeOutVolume = mFadeOutVolume - (float) (1.0f / (((float) mCrossfadeDuration) * 10.0f));
-
-                        mHandler.postDelayed(crossFadeRunnable, 100);
-                    }
-
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
-
-    };
-
-    /**
      * Grabs the song parameters at the specified index, retrieves its
      * data source, and beings to asynchronously prepare mMediaPlayer.
      * Once mMediaPlayer is prepared, mediaPlayerPrepared is called.
@@ -1661,8 +1672,8 @@ public class AudioPlaybackService extends Service {
             SongHelper songHelper = new SongHelper();
             if (mFirstRun) {
 	    		/*
-	    		 * We're not preloading the next song (mMediaPlayer2 is not 
-	    		 * playing right now). mMediaPlayer's song is pointed at 
+	    		 * We're not preloading the next song (mMediaPlayer2 is not
+	    		 * playing right now). mMediaPlayer's song is pointed at
 	    		 * by mCurrentSongIndex.
 	    		 */
                 songHelper.populateSongData(mContext, songIndex);
@@ -1675,7 +1686,7 @@ public class AudioPlaybackService extends Service {
             }
 
     		/*
-    		 * Set the data source for mMediaPlayer and start preparing it 
+    		 * Set the data source for mMediaPlayer and start preparing it
     		 * asynchronously.
     		 */
             getMediaPlayer().setDataSource(mContext, getSongDataSource(getMediaPlayerSongHelper()));
@@ -1734,7 +1745,7 @@ public class AudioPlaybackService extends Service {
             setMediaPlayer2SongHelper(songHelper);
 
     		/*
-    		 * Set the data source for mMediaPlayer and start preparing it 
+    		 * Set the data source for mMediaPlayer and start preparing it
     		 * asynchronously.
     		 */
             getMediaPlayer2().setDataSource(mContext, getSongDataSource(getMediaPlayer2SongHelper()));
@@ -1859,33 +1870,6 @@ public class AudioPlaybackService extends Service {
         mRepeatSongRangePointB = 0;
         mApp.getSharedPreferences().edit().putInt(Common.REPEAT_MODE, Common.REPEAT_OFF);
     }
-
-    /**
-     * Called repetitively to check for A-B repeat markers.
-     */
-    private Runnable checkABRepeatRange = new Runnable() {
-
-        @Override
-        public void run() {
-            try {
-                if (getCurrentMediaPlayer().isPlaying()) {
-
-                    if (getCurrentMediaPlayer().getCurrentPosition() >= (mRepeatSongRangePointB)) {
-                        getCurrentMediaPlayer().seekTo(mRepeatSongRangePointA);
-                    }
-
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (mApp.getSharedPreferences().getInt(Common.REPEAT_MODE, Common.REPEAT_OFF) == Common.A_B_REPEAT) {
-                mHandler.postDelayed(checkABRepeatRange, 100);
-            }
-
-        }
-
-    };
 
     /**
      * Fix for KitKat error where the service is killed as soon
@@ -2448,51 +2432,6 @@ public class AudioPlaybackService extends Service {
     }
 
     /**
-     * Applies the specified repeat mode.
-     */
-    public void setRepeatMode(int repeatMode) {
-        if (repeatMode == Common.REPEAT_OFF || repeatMode == Common.REPEAT_PLAYLIST ||
-                repeatMode == Common.REPEAT_SONG || repeatMode == Common.A_B_REPEAT) {
-            //Save the repeat mode.
-            mApp.getSharedPreferences().edit().putInt(Common.REPEAT_MODE, repeatMode).commit();
-        } else {
-            //Just in case a bogus value is passed in.
-            mApp.getSharedPreferences().edit().putInt(Common.REPEAT_MODE, Common.REPEAT_OFF).commit();
-        }
-    	
-    	/* 
-    	 * Set the both MediaPlayer objects to loop if the repeat mode 
-    	 * is Common.REPEAT_SONG.
-    	 */
-        try {
-            if (repeatMode == Common.REPEAT_SONG) {
-                getMediaPlayer().setLooping(true);
-                getMediaPlayer2().setLooping(true);
-            } else {
-                getMediaPlayer().setLooping(false);
-                getMediaPlayer2().setLooping(false);
-            }
-
-            //Prepare the appropriate next song.
-            prepareAlternateMediaPlayer();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        /*
-         * Remove the crossfade callbacks and reinitalize them
-         * only if the user didn't select A-B repeat.
-         */
-        clearCrossfadeCallbacks();
-
-        if (repeatMode != Common.A_B_REPEAT)
-            if (mHandler != null && mApp.isCrossfadeEnabled())
-                mHandler.post(startCrossFadeRunnable);
-
-    }
-
-    /**
      * Returns the current active MediaPlayer object.
      */
     public MediaPlayer getCurrentMediaPlayer() {
@@ -2500,6 +2439,16 @@ public class AudioPlaybackService extends Service {
             return mMediaPlayer;
         else
             return mMediaPlayer2;
+    }
+
+    /**
+     * Sets the current active media player. Note that this
+     * method does not modify the MediaPlayer objects in any
+     * way. It simply changes the int variable that points to
+     * the new current MediaPlayer object.
+     */
+    public void setCurrentMediaPlayer(int currentMediaPlayer) {
+        mCurrentMediaPlayer = currentMediaPlayer;
     }
 
     /**
@@ -2570,6 +2519,22 @@ public class AudioPlaybackService extends Service {
     }
 
     /**
+     * Sets the current MediaPlayer's SongHelper object. Also
+     * indirectly calls the updateNotification() and updateWidgets()
+     * methods via the [CURRENT SONG HELPER].setIsCurrentSong() method.
+     */
+    private void setCurrentSong(SongHelper songHelper) {
+        if (getCurrentMediaPlayer() == mMediaPlayer) {
+            mMediaPlayerSongHelper = songHelper;
+            mMediaPlayerSongHelper.setIsCurrentSong();
+        } else {
+            mMediaPlayer2SongHelper = songHelper;
+            mMediaPlayer2SongHelper.setIsCurrentSong();
+        }
+
+    }
+
+    /**
      * Removes all crossfade callbacks on the current
      * Handler object. Also resets the volumes of the
      * MediaPlayer objects to 1.0f.
@@ -2598,6 +2563,13 @@ public class AudioPlaybackService extends Service {
     }
 
     /**
+     * Sets mMediaPlayerSongHelper.
+     */
+    public void setMediaPlayerSongHelper(SongHelper songHelper) {
+        mMediaPlayerSongHelper = songHelper;
+    }
+
+    /**
      * Returns mMediaPlayer2's SongHelper instance.
      */
     public SongHelper getMediaPlayer2SongHelper() {
@@ -2605,10 +2577,24 @@ public class AudioPlaybackService extends Service {
     }
 
     /**
+     * Sets mMediaPlayer2SongHelper.
+     */
+    public void setMediaPlayer2SongHelper(SongHelper songHelper) {
+        mMediaPlayer2SongHelper = songHelper;
+    }
+
+    /**
      * Returns the service's cursor object.
      */
     public Cursor getCursor() {
         return mCursor;
+    }
+
+    /**
+     * Replaces the current cursor object with the new one.
+     */
+    public void setCursor(Cursor cursor) {
+        mCursor = cursor;
     }
 
     /**
@@ -2635,6 +2621,13 @@ public class AudioPlaybackService extends Service {
     }
 
     /**
+     * Changes the value of mCurrentSongIndex.
+     */
+    public void setCurrentSongIndex(int currentSongIndex) {
+        mCurrentSongIndex = currentSongIndex;
+    }
+
+    /**
      * Indicates if the track was changed by the user.
      */
     public boolean getTrackChangedByUser() {
@@ -2642,10 +2635,24 @@ public class AudioPlaybackService extends Service {
     }
 
     /**
+     * Sets whether the track was changed by the user or not.
+     */
+    public void setTrackChangedByUser(boolean trackChangedByUser) {
+        mTrackChangedByUser = trackChangedByUser;
+    }
+
+    /**
      * Indicates if an enqueue operation was performed.
      */
     public boolean getEnqueuePerformed() {
         return mEnqueuePerformed;
+    }
+
+    /**
+     * Sets whether an enqueue operation was performed or not.
+     */
+    public void setEnqueuePerformed(boolean enqueuePerformed) {
+        mEnqueuePerformed = enqueuePerformed;
     }
 
     /**
@@ -2687,10 +2694,24 @@ public class AudioPlaybackService extends Service {
     }
 
     /**
+     * Sets the new enqueue reorder scalar value.
+     */
+    public void setEnqueueReorderScalar(int scalar) {
+        mEnqueueReorderScalar = scalar;
+    }
+
+    /**
      * Returns point A in milliseconds for A-B repeat.
      */
     public int getRepeatSongRangePointA() {
         return mRepeatSongRangePointA;
+    }
+
+    /**
+     * Sets point A in milliseconds for A-B repeat.
+     */
+    public void setRepeatSongRangePointA(int value) {
+        mRepeatSongRangePointA = value;
     }
 
     /**
@@ -2707,6 +2728,51 @@ public class AudioPlaybackService extends Service {
      */
     public int getRepeatMode() {
         return mApp.getSharedPreferences().getInt(Common.REPEAT_MODE, Common.REPEAT_OFF);
+    }
+
+    /**
+     * Applies the specified repeat mode.
+     */
+    public void setRepeatMode(int repeatMode) {
+        if (repeatMode == Common.REPEAT_OFF || repeatMode == Common.REPEAT_PLAYLIST ||
+                repeatMode == Common.REPEAT_SONG || repeatMode == Common.A_B_REPEAT) {
+            //Save the repeat mode.
+            mApp.getSharedPreferences().edit().putInt(Common.REPEAT_MODE, repeatMode).commit();
+        } else {
+            //Just in case a bogus value is passed in.
+            mApp.getSharedPreferences().edit().putInt(Common.REPEAT_MODE, Common.REPEAT_OFF).commit();
+        }
+
+    	/*
+    	 * Set the both MediaPlayer objects to loop if the repeat mode
+    	 * is Common.REPEAT_SONG.
+    	 */
+        try {
+            if (repeatMode == Common.REPEAT_SONG) {
+                getMediaPlayer().setLooping(true);
+                getMediaPlayer2().setLooping(true);
+            } else {
+                getMediaPlayer().setLooping(false);
+                getMediaPlayer2().setLooping(false);
+            }
+
+            //Prepare the appropriate next song.
+            prepareAlternateMediaPlayer();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        /*
+         * Remove the crossfade callbacks and reinitalize them
+         * only if the user didn't select A-B repeat.
+         */
+        clearCrossfadeCallbacks();
+
+        if (repeatMode != Common.A_B_REPEAT)
+            if (mHandler != null && mApp.isCrossfadeEnabled())
+                mHandler.post(startCrossFadeRunnable);
+
     }
 
     /**
@@ -2733,16 +2799,6 @@ public class AudioPlaybackService extends Service {
     }
 
     /**
-     * Sets the current active media player. Note that this
-     * method does not modify the MediaPlayer objects in any
-     * way. It simply changes the int variable that points to
-     * the new current MediaPlayer object.
-     */
-    public void setCurrentMediaPlayer(int currentMediaPlayer) {
-        mCurrentMediaPlayer = currentMediaPlayer;
-    }
-
-    /**
      * Sets the prepared flag for mMediaPlayer.
      */
     public void setIsMediaPlayerPrepared(boolean prepared) {
@@ -2757,52 +2813,10 @@ public class AudioPlaybackService extends Service {
     }
 
     /**
-     * Changes the value of mCurrentSongIndex.
-     */
-    public void setCurrentSongIndex(int currentSongIndex) {
-        mCurrentSongIndex = currentSongIndex;
-    }
-
-    /**
-     * Sets whether the track was changed by the user or not.
-     */
-    public void setTrackChangedByUser(boolean trackChangedByUser) {
-        mTrackChangedByUser = trackChangedByUser;
-    }
-
-    /**
-     * Sets whether an enqueue operation was performed or not.
-     */
-    public void setEnqueuePerformed(boolean enqueuePerformed) {
-        mEnqueuePerformed = enqueuePerformed;
-    }
-
-    /**
-     * Sets the new enqueue reorder scalar value.
-     */
-    public void setEnqueueReorderScalar(int scalar) {
-        mEnqueueReorderScalar = scalar;
-    }
-
-    /**
-     * Sets point A in milliseconds for A-B repeat.
-     */
-    public void setRepeatSongRangePointA(int value) {
-        mRepeatSongRangePointA = value;
-    }
-
-    /**
      * Returns point B in milliseconds for A-B repeat.
      */
     public void getRepeatSongRangePointB(int value) {
         mRepeatSongRangePointB = value;
-    }
-
-    /**
-     * Replaces the current cursor object with the new one.
-     */
-    public void setCursor(Cursor cursor) {
-        mCursor = cursor;
     }
 
     /**
@@ -2889,36 +2903,6 @@ public class AudioPlaybackService extends Service {
      */
     public void setPrepareServiceListener(PrepareServiceListener listener) {
         mPrepareServiceListener = listener;
-    }
-
-    /**
-     * Sets mMediaPlayerSongHelper.
-     */
-    public void setMediaPlayerSongHelper(SongHelper songHelper) {
-        mMediaPlayerSongHelper = songHelper;
-    }
-
-    /**
-     * Sets mMediaPlayer2SongHelper.
-     */
-    public void setMediaPlayer2SongHelper(SongHelper songHelper) {
-        mMediaPlayer2SongHelper = songHelper;
-    }
-
-    /**
-     * Sets the current MediaPlayer's SongHelper object. Also
-     * indirectly calls the updateNotification() and updateWidgets()
-     * methods via the [CURRENT SONG HELPER].setIsCurrentSong() method.
-     */
-    private void setCurrentSong(SongHelper songHelper) {
-        if (getCurrentMediaPlayer() == mMediaPlayer) {
-            mMediaPlayerSongHelper = songHelper;
-            mMediaPlayerSongHelper.setIsCurrentSong();
-        } else {
-            mMediaPlayer2SongHelper = songHelper;
-            mMediaPlayer2SongHelper.setIsCurrentSong();
-        }
-
     }
 
     /**
@@ -3032,50 +3016,26 @@ public class AudioPlaybackService extends Service {
     }
 
     /**
-     * Interface implementation to listen for service cursor events.
+     * Public interface that provides access to
+     * major events during the service startup
+     * process.
+     *
+     * @author Saravan Pantham
      */
-    public BuildCursorListener buildCursorListener = new BuildCursorListener() {
+    public interface PrepareServiceListener {
 
-        @Override
-        public void onServiceCursorReady(Cursor cursor, int currentSongIndex, boolean playAll) {
+        /**
+         * Called when the service is up and running.
+         */
+        public void onServiceRunning(AudioPlaybackService service);
 
-            if (cursor.getCount() == 0) {
-                Toast.makeText(mContext, R.string.no_audio_files_found, Toast.LENGTH_SHORT).show();
-                if (mApp.getNowPlayingActivity() != null)
-                    mApp.getNowPlayingActivity().finish();
+        /**
+         * Called when the service failed to start.
+         * Also returns the failure reason via the exception
+         * parameter.
+         */
+        public void onServiceFailed(Exception exception);
 
-                return;
-            }
-
-            setCursor(cursor);
-            setCurrentSongIndex(currentSongIndex);
-            getFailedIndecesList().clear();
-            initPlaybackIndecesList(playAll);
-            mFirstRun = true;
-            prepareMediaPlayer(currentSongIndex);
-            //Notify NowPlayingActivity to initialize its ViewPager.
-            mApp.broadcastUpdateUICommand(new String[]{Common.INIT_PAGER},
-                    new String[]{""});
-        }
-
-        @Override
-        public void onServiceCursorFailed(String exceptionMessage) {
-            //We don't have a valid cursor, so stop the service.
-            Log.e("SERVICE CURSOR EXCEPTION", "onServiceCursorFailed(): " + exceptionMessage);
-            Toast.makeText(mContext, R.string.unable_to_start_playback, Toast.LENGTH_SHORT).show();
-            stopSelf();
-
-        }
-
-        @Override
-        public void onServiceCursorUpdated(Cursor cursor) {
-            //Make sure the new cursor and the old cursor are the same size.
-            if (getCursor().getCount() == cursor.getCount()) {
-                setCursor(cursor);
-            }
-
-        }
-
-    };
+    }
 
 }

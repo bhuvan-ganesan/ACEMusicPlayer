@@ -47,6 +47,41 @@ public class SettingsMusicLibraryFragment extends PreferenceFragment {
 
     private Preference mSelectMusicFoldersPreference;
     private Preference mRefreshMusicFoldersPreference;
+    /**
+     * Click listener for "Select Music Folders".
+     */
+    private Preference.OnPreferenceClickListener selectMusicFoldersClickListener = new Preference.OnPreferenceClickListener() {
+
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+            Bundle bundle = new Bundle();
+            SettingsMusicFoldersDialog foldersDialog = new SettingsMusicFoldersDialog();
+            foldersDialog.setArguments(bundle);
+            foldersDialog.show(ft, "foldersDialog");
+
+            return false;
+        }
+
+    };
+    /**
+     * Click listener for "Refresh Music Folders".
+     */
+    private Preference.OnPreferenceClickListener refreshMusicFoldersClickListener = new Preference.OnPreferenceClickListener() {
+
+        @Override
+        public boolean onPreferenceClick(Preference preference) {
+            getActivity().finish();
+
+            Intent intent = new Intent(mContext, WelcomeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra("REFRESH_MUSIC_LIBRARY", true);
+            mContext.startActivity(intent);
+
+            return false;
+        }
+
+    };
 
     @Override
     public void onCreate(Bundle onSavedInstanceState) {
@@ -83,7 +118,7 @@ public class SettingsMusicLibraryFragment extends PreferenceFragment {
      * Applies KitKat specific translucency.
      */
     private void applyKitKatTranslucency() {
-        if (Build.VERSION.SDK_INT==Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
 
             //Calculate ActionBar and navigation bar height.
             TypedValue tv = new TypedValue();
@@ -105,48 +140,11 @@ public class SettingsMusicLibraryFragment extends PreferenceFragment {
 
     }
 
-    /**
-     * Click listener for "Select Music Folders".
-     */
-    private Preference.OnPreferenceClickListener selectMusicFoldersClickListener = new Preference.OnPreferenceClickListener() {
-
-        @Override
-        public boolean onPreferenceClick(Preference preference) {
-            FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-            Bundle bundle = new Bundle();
-            SettingsMusicFoldersDialog foldersDialog = new SettingsMusicFoldersDialog();
-            foldersDialog.setArguments(bundle);
-            foldersDialog.show(ft, "foldersDialog");
-
-            return false;
-        }
-
-    };
-
-    /**
-     * Click listener for "Refresh Music Folders".
-     */
-    private Preference.OnPreferenceClickListener refreshMusicFoldersClickListener = new Preference.OnPreferenceClickListener() {
-
-        @Override
-        public boolean onPreferenceClick(Preference preference) {
-            getActivity().finish();
-
-            Intent intent = new Intent(mContext, WelcomeActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.putExtra("REFRESH_MUSIC_LIBRARY", true);
-            mContext.startActivity(intent);
-
-            return false;
-        }
-
-    };
-
     @Override
     public void onResume() {
         super.onResume();
 
-        if (Build.VERSION.SDK_INT==Build.VERSION_CODES.KITKAT)
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT)
             getActivity().getActionBar().setBackgroundDrawable(UIElementsHelper.getGeneralActionBarBackground(mContext));
 
     }

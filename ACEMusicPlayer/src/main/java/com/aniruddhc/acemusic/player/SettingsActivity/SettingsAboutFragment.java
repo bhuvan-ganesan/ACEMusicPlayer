@@ -50,73 +50,6 @@ public class SettingsAboutFragment extends PreferenceFragment {
     private Preference mDevPreference;
     private Preference mLicensePreference;
     private Preference mNoticePreference;
-
-    @Override
-    public void onCreate(Bundle onSavedInstanceState) {
-        super.onCreate(onSavedInstanceState);
-        addPreferencesFromResource(R.xml.settings_about);
-
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle onSavedInstanceState) {
-        mRootView = super.onCreateView(inflater, container, onSavedInstanceState);
-
-        mContext = getActivity().getApplicationContext();
-        mApp = (Common) mContext;
-        mListView = (ListView) mRootView.findViewById(android.R.id.list);
-
-        //Set the ActionBar background and text color.
-        applyKitKatTranslucency();
-        getActivity().getActionBar().setTitle(R.string.settings);
-        int titleId = getResources().getIdentifier("action_bar_title", "id", "android");
-        TextView actionBarText = (TextView) getActivity().findViewById(titleId);
-        actionBarText.setTextColor(0xFFFFFFFF);
-
-        mAboutAppPreference = getPreferenceManager().findPreference("preference_key_about_app");
-        mBasePreference = getPreferenceManager().findPreference("preference_key_player_base_license");
-        mThanksPreference = getPreferenceManager().findPreference("preference_key_special_thanks");
-        mDevPreference = getPreferenceManager().findPreference("preference_key_about_dev");
-        mLicensePreference = getPreferenceManager().findPreference("preference_key_license");
-        mNoticePreference = getPreferenceManager().findPreference("preference_key_license_short");
-
-        //Apply the click listeners.
-        mAboutAppPreference.setOnPreferenceClickListener(appAboutClickListener);
-        mBasePreference.setOnPreferenceClickListener(BaseClickListener);
-        mThanksPreference.setOnPreferenceClickListener(ThanksScreenClickListener);
-        mDevPreference.setOnPreferenceClickListener(DevClickListener);
-        mLicensePreference.setOnPreferenceClickListener(LicenseClickListener);
-        mNoticePreference.setOnPreferenceClickListener(NoticeClickListener);
-
-        return mRootView;
-    }
-
-    /**
-     * Applies KitKat specific translucency.
-     */
-    private void applyKitKatTranslucency() {
-        if (Build.VERSION.SDK_INT==Build.VERSION_CODES.KITKAT) {
-
-            //Calculate ActionBar and navigation bar height.
-            TypedValue tv = new TypedValue();
-            int actionBarHeight = 0;
-            if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
-                actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
-            }
-
-            mListView.setBackgroundColor(0xFFEEEEEE);
-            mRootView.setPadding(0, actionBarHeight + mApp.getStatusBarHeight(mContext),
-                    0, 0);
-            mListView.setPadding(10, 0, 10, mApp.getNavigationBarHeight(mContext));
-            mListView.setClipToPadding(false);
-
-            //Set the window color.
-            getActivity().getWindow().setBackgroundDrawable(UIElementsHelper.getGeneralActionBarBackground(mContext));
-
-        }
-
-    }
-
     /**
      * Click listener for the app theme preference.
      */
@@ -134,7 +67,6 @@ public class SettingsAboutFragment extends PreferenceFragment {
         }
 
     };
-
     /**
      * Click listener for the color preference.
      */
@@ -198,7 +130,6 @@ public class SettingsAboutFragment extends PreferenceFragment {
         }
 
     };
-
     private Preference.OnPreferenceClickListener NoticeClickListener = new Preference.OnPreferenceClickListener() {
 
         @Override
@@ -215,12 +146,77 @@ public class SettingsAboutFragment extends PreferenceFragment {
 
     };
 
+    @Override
+    public void onCreate(Bundle onSavedInstanceState) {
+        super.onCreate(onSavedInstanceState);
+        addPreferencesFromResource(R.xml.settings_about);
+
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle onSavedInstanceState) {
+        mRootView = super.onCreateView(inflater, container, onSavedInstanceState);
+
+        mContext = getActivity().getApplicationContext();
+        mApp = (Common) mContext;
+        mListView = (ListView) mRootView.findViewById(android.R.id.list);
+
+        //Set the ActionBar background and text color.
+        applyKitKatTranslucency();
+        getActivity().getActionBar().setTitle(R.string.settings);
+        int titleId = getResources().getIdentifier("action_bar_title", "id", "android");
+        TextView actionBarText = (TextView) getActivity().findViewById(titleId);
+        actionBarText.setTextColor(0xFFFFFFFF);
+
+        mAboutAppPreference = getPreferenceManager().findPreference("preference_key_about_app");
+        mBasePreference = getPreferenceManager().findPreference("preference_key_player_base_license");
+        mThanksPreference = getPreferenceManager().findPreference("preference_key_special_thanks");
+        mDevPreference = getPreferenceManager().findPreference("preference_key_about_dev");
+        mLicensePreference = getPreferenceManager().findPreference("preference_key_license");
+        mNoticePreference = getPreferenceManager().findPreference("preference_key_license_short");
+
+        //Apply the click listeners.
+        mAboutAppPreference.setOnPreferenceClickListener(appAboutClickListener);
+        mBasePreference.setOnPreferenceClickListener(BaseClickListener);
+        mThanksPreference.setOnPreferenceClickListener(ThanksScreenClickListener);
+        mDevPreference.setOnPreferenceClickListener(DevClickListener);
+        mLicensePreference.setOnPreferenceClickListener(LicenseClickListener);
+        mNoticePreference.setOnPreferenceClickListener(NoticeClickListener);
+
+        return mRootView;
+    }
+
+    /**
+     * Applies KitKat specific translucency.
+     */
+    private void applyKitKatTranslucency() {
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+
+            //Calculate ActionBar and navigation bar height.
+            TypedValue tv = new TypedValue();
+            int actionBarHeight = 0;
+            if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+                actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+            }
+
+            mListView.setBackgroundColor(0xFFEEEEEE);
+            mRootView.setPadding(0, actionBarHeight + mApp.getStatusBarHeight(mContext),
+                    0, 0);
+            mListView.setPadding(10, 0, 10, mApp.getNavigationBarHeight(mContext));
+            mListView.setClipToPadding(false);
+
+            //Set the window color.
+            getActivity().getWindow().setBackgroundDrawable(UIElementsHelper.getGeneralActionBarBackground(mContext));
+
+        }
+
+    }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        if (Build.VERSION.SDK_INT==Build.VERSION_CODES.KITKAT)
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT)
             getActivity().getActionBar().setBackgroundDrawable(UIElementsHelper.getGeneralActionBarBackground(mContext));
 
     }

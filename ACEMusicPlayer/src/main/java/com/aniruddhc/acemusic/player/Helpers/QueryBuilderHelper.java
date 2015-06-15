@@ -16,9 +16,9 @@
 package com.aniruddhc.acemusic.player.Helpers;
 
 /**
- * Constructs SQLite raw queries for common 
+ * Constructs SQLite raw queries for common
  * operations.
- * 
+ *
  * @author Saravan Pantham
  */
 public class QueryBuilderHelper {

@@ -3,8 +3,8 @@
     <item>
 
         <shape
-            android:shape="rectangle"
-            android:dither="true" >
+            android:dither="true"
+            android:shape="rectangle">
 
             <corners android:radius="2dp" />
 
@@ -13,23 +13,20 @@
         </shape>
     </item>
 
-    <item
-        android:bottom="1dp" >
+    <item android:bottom="1dp">
 
         <shape
-            android:shape="rectangle"
-            android:dither="true" >
+            android:dither="true"
+            android:shape="rectangle">
 
-            <corners
-                android:radius="2dp" />
+            <corners android:radius="2dp" />
 
             <gradient
-                android:startColor="#00F8F8F6"
-                android:centerColor="#00F8F8F6"
-                android:endColor="#00F8F8F6"
                 android:angle="90"
+                android:centerColor="#00F8F8F6"
                 android:dither="true"
-                />
+                android:endColor="#00F8F8F6"
+                android:startColor="#00F8F8F6" />
 
             <padding
                 android:bottom="0dp"

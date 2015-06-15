@@ -14,8 +14,9 @@
         android:key="preference_key_eq"
         android:title="@string/equalizer">
 
-        <intent android:action="android.intent.action.MAIN"
-                    android:targetPackage="com.aniruddhc.acemusic.player.EqualizerActivity"
-                    android:targetClass="com.aniruddhc.acemusic.player.EqualizerActivity.EqualizerActivity" />
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetClass="com.aniruddhc.acemusic.player.EqualizerActivity.EqualizerActivity"
+            android:targetPackage="com.aniruddhc.acemusic.player.EqualizerActivity" />
     </Preference>
 </PreferenceScreen>

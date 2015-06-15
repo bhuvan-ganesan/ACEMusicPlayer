@@ -55,24 +55,36 @@ import java.lang.reflect.Method;
 
 public class LauncherActivity extends FragmentActivity {
 
-    public Context mContext;
-    private Common mApp;
-    public Activity mActivity;
-
-    public static String mAccountName;
-    static final int REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR = 1002;
-    public static IabHelper mHelper;
     protected static final String ITEM_SKU = "com.aniruddhc.acemusic.player.unlock";
     protected static final String ITEM_SKU_PROMO = "com.aniruddhc.acemusic.player.unlock.promo";
+    static final int REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR = 1002;
     private static final String CAMPAIGN_SOURCE_PARAM = "utm_source";
-    protected boolean mPurchased;
-    protected boolean mPurchasedPromo;
-    private boolean mExplicitShowTrialFragment;
-
+    public static String mAccountName;
+    public static IabHelper mHelper;
     public static TextView buildingLibraryMainText;
     public static TextView buildingLibraryInfoText;
+    public Context mContext;
+    public Activity mActivity;
+    protected boolean mPurchased;
+    protected boolean mPurchasedPromo;
+    private Common mApp;
+    private boolean mExplicitShowTrialFragment;
     private RelativeLayout buildingLibraryLayout;
     private Handler mHandler;
+    private Runnable scanFinishedCheckerRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+
+            if (mApp.isBuildingLibrary() == false) {
+                launchMainActivity();
+            } else {
+                mHandler.postDelayed(this, 100);
+            }
+
+        }
+
+    };
 
     @SuppressLint("NewApi")
     @Override
@@ -307,23 +319,8 @@ public class LauncherActivity extends FragmentActivity {
 
     }
 
-    private Runnable scanFinishedCheckerRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-
-            if (mApp.isBuildingLibrary() == false) {
-                launchMainActivity();
-            } else {
-                mHandler.postDelayed(this, 100);
-            }
-
-        }
-
-    };
-
 	/*private void initInAppBilling() {
-		String base64EncodedPublicKey = "";
+        String base64EncodedPublicKey = "";
 		
 		base64EncodedPublicKey = Common.uid4 + 
 								 Common.uid2 +

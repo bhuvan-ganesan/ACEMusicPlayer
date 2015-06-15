@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:minWidth="1000dp"
-    android:minHeight="1000dp"
     style="@style/AppThemeLightNoActionBar"
-    android:background="@drawable/now_playing_controls_background_light">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/now_playing_controls_background_light"
+    android:minHeight="1000dp"
+    android:minWidth="1000dp"
+    android:orientation="vertical">
 
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:scaleX="0.5"
-        android:scaleY="0.5"
-        android:src="@drawable/app_icon_xlarge"
         android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
+        android:layout_marginTop="20dp"
+        android:scaleX="0.5"
+        android:scaleY="0.5"
+        android:src="@drawable/app_icon_xlarge" />
 
     <TextView
         android:id="@+id/welcome_header"
@@ -27,10 +28,10 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="0dp"
         android:layout_marginTop="0dp"
-        android:textColor="#0099CC"
         android:text="About ACEMusic"
-        android:textSize="40sp"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#0099CC"
+        android:textSize="40sp" />
 
     <TextView
         android:id="@+id/welcome_text_1"
@@ -39,24 +40,24 @@
         android:layout_alignLeft="@+id/welcome_header"
         android:layout_below="@+id/welcome_header"
         android:layout_marginLeft="0dp"
-        android:layout_marginTop="0dp"
-        android:textColor="#FFFFFF"
-        android:text="Thanks for downloading ACEMusic. ACEMusic is a highly improvisied, elegant and powerful music player, Based off jams!"
         android:layout_marginRight="30dp"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:layout_marginTop="0dp"
+        android:text="Thanks for downloading ACEMusic. ACEMusic is a highly improvisied, elegant and powerful music player, Based off jams!"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#FFFFFF" />
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Special thanks to Saravan Pantham(Jams)"
-        android:id="@+id/textView"
-        android:textColor="#FFFFFF"
-        android:textAlignment="center"
-        android:layout_below="@+id/welcome_text_1"
         android:layout_alignLeft="@+id/welcome_header"
         android:layout_alignStart="@+id/welcome_header"
-        android:layout_marginTop="10dp" />
+        android:layout_below="@+id/welcome_text_1"
+        android:layout_marginTop="10dp"
+        android:text="Special thanks to Saravan Pantham(Jams)"
+        android:textAlignment="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="#FFFFFF" />
 
 
 </RelativeLayout>

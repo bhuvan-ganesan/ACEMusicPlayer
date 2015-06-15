@@ -71,7 +71,7 @@ public class RemoteControlHelper {
     }
 
     public static void registerRemoteControlClient(AudioManager audioManager,
-            RemoteControlClientCompat remoteControlClient) {
+                                                   RemoteControlClientCompat remoteControlClient) {
         if (!sHasRemoteControlAPIs) {
             return;
         }
@@ -86,7 +86,7 @@ public class RemoteControlHelper {
 
 
     public static void unregisterRemoteControlClient(AudioManager audioManager,
-            RemoteControlClientCompat remoteControlClient) {
+                                                     RemoteControlClientCompat remoteControlClient) {
         if (!sHasRemoteControlAPIs) {
             return;
         }

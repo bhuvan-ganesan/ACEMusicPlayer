@@ -61,7 +61,7 @@ android {
 }
 
 dependencies {
-    compile ('com.android.support:multidex:1.0.0')
+    compile('com.android.support:multidex:1.0.0')
     compile project(':licensesdialoglibrary')
     compile project(':quickScroll')
     compile project(':velocityviewpagerlibrary')
